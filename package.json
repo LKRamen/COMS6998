@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate:map": "node scripts/build-world-map.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.7",
@@ -24,10 +25,13 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.1",
+    "d3-geo": "3.1.1",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.8",
     "jsdom": "30.1.0",
+    "topojson-client": "3.1.0",
     "typescript": "6.0.3",
-    "vitest": "5.0.1"
+    "vitest": "5.0.1",
+    "world-atlas": "2.0.2"
   }
 }

@@ -1,14 +1,19 @@
-import Link from "next/link";
 import { requireCompleteProfile } from "../../lib/auth";
-import { signOut } from "../auth/actions";
+import { getMyVisits } from "../../lib/travel";
+import WorldMap from "../components/world-map";
+import TravelNav from "../components/travel-nav";
+import VisitList from "../components/visit-list";
 
-export default async function Members() {
-  const { profile } = await requireCompleteProfile();
-  return <main className="account-page"><div className="account-card">
-    <p className="eyebrow">WORLD POPULATION / MEMBERS</p>
-    <h1>Welcome, {profile.first_name}.</h1>
-    <p className="page-intro">You’re in. This members area is available to signed-in users who have completed their profile.</p>
-    <section className="member-note"><h2>A world in numbers</h2><p>The world’s population passed eight billion in 2022. Explore the public rankings to see how people are distributed across the most populous countries.</p></section>
-    <nav className="account-links" aria-label="Account"><Link href="/profile">Edit your profile</Link><Link href="/">Explore the rankings</Link><form action={signOut}><button className="text-button" type="submit">Sign out</button></form></nav>
+export default async function Members({ searchParams }: { searchParams: Promise<{ saved?: string; removed?: string; error?: string }> }) {
+  const { supabase, user, profile } = await requireCompleteProfile();
+  const visits = await getMyVisits(supabase, user.id);
+  const params = await searchParams;
+  return <main className="travel-page"><div className="travel-frame"><TravelNav signedIn current="personal"/>
+    <header className="travel-heading"><div><p className="eyebrow">{profile.first_name}’S TRAVEL JOURNAL</p><h1>Your world,<br/><span>so far.</span></h1><p className="page-intro">A little record of the places that became part of your story.<br/>Add where you’ve been. See how far you’ve come.</p></div><div className="travel-stat"><strong>{visits.length.toString().padStart(2,"0")}</strong><span>countries &amp; territories visited</span><small>Only you can edit this map</small></div></header>
+    {params.error && <p className="form-message" role="alert">{params.error === "country" ? "Choose a valid country from the list." : "Your travel list could not be updated. Please try again."}</p>}
+    {(params.saved || params.removed) && <p className="form-message success" role="status">{params.removed ? "Country removed from your travels." : "Your travel map is up to date."}</p>}
+    <WorldMap personal counts={visits.map(code => ({country_code:code, visitor_count:1}))}/>
+    <VisitList visited={visits}/>
+    <footer className="travel-footer"><span>Your personal map. Our collective world.</span><a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Map data: Natural Earth</a><span>Countries &amp; territories · illustrative boundaries</span></footer>
   </div></main>;
 }

@@ -22,9 +22,9 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   }
   const complete = isProfileComplete(profile);
   return <main className="account-page"><div className="account-card">
-    <p className="eyebrow">WORLD POPULATION / YOUR ACCOUNT</p>
+    <p className="eyebrow">BEEN THERE / YOUR ACCOUNT</p>
     <h1>{complete ? "Your profile" : "Let’s get to know you."}</h1>
-    <p className="page-intro">{complete ? "Keep your name and photo up to date." : "Add your first and last name to finish signing up and unlock the members area."}</p>
+    <p className="page-intro">{complete ? "Keep your name and photo up to date." : "Add your first and last name to finish signing up and start your travel map."}</p>
     <p className="account-email">Signed in as {user.email}</p>
     {photoUrl && <picture><img className="avatar" src={photoUrl} alt="Your profile photo" width="96" height="96" /></picture>}
     {error && <p className="form-message" role="alert">{errors[error] ?? "Something went wrong. Please try again."}</p>}
@@ -38,8 +38,8 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       <button className="button" type="submit" disabled={!profile}>Save profile</button>
     </form>
     <nav className="account-links" aria-label="Account">
-      {complete && <Link href="/members">Go to members area →</Link>}
-      <Link href="/">Population rankings</Link>
+      {complete && <Link href="/members">Go to my travels →</Link>}
+      <Link href="/">Community map</Link>
       <form action={signOut}><button type="submit" className="text-button">Sign out</button></form>
     </nav>
   </div></main>;

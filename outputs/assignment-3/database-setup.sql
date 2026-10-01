@@ -1,5 +1,5 @@
--- Prepared for swmgfanscadzfkqoctle; NOT applied in this session.
--- Inspect existing schema/policies with supabase-coms6998 before applying.
+-- Applied to swmgfanscadzfkqoctle via the user-authorized Supabase dashboard on 2026-10-01.
+-- Historical setup script: do not rerun against the configured project.
 begin;
 
 create table public.profiles (

@@ -1,3 +1,20 @@
+# Live verification update — 2026-10-01 02:33 EDT
+
+This update supersedes the blocked verification and release notes below.
+
+- Commit bdacf8c was pushed and successfully deployed to production.
+- Root cause of the profile runtime error: missing profiles table, signup trigger, and avatars bucket. Applied database-setup.sql through the explicitly authorized project dashboard.
+- Verified profiles exists, signup trigger is enabled, all existing auth users have profiles, names are nullable, RLS is enabled, and avatars is private.
+- Verified owner-scoped profile read/update and avatar read/insert/delete policies exist.
+- With the user's approval, saved Layth Rahman through the deployed Profile form; the saved names persist after refresh.
+- An uploaded profile photo renders successfully (1254 by 1254 pixels) and persists after refresh. The photo appeared during user activity; the agent did not select or upload the file.
+- Signed-in /members renders Welcome, Layth.
+- Independent requests without authentication to /members and /profile both redirect to /login and render Continue with Google.
+- Image files are stored in Supabase Storage; profiles stores avatar_path only.
+- Full new-user signup after installing the trigger and cross-account isolation have not been exercised end to end.
+
+## Earlier verification record
+
 # Local verification — 2026-10-01
 
 - `npm test`: 14 tests passed across 4 files.

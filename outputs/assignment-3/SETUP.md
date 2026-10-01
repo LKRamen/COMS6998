@@ -1,3 +1,5 @@
+> Status update (2026-10-01): App deployed; Google OAuth connected; database-setup.sql applied via the user-authorized Supabase dashboard. Profile names/photo and protected routes verified live. See VERIFICATION.md for current evidence. The remaining-setup notes below are the earlier preparation record.
+
 # Assignment 3: account and profile setup
 
 ## Prepared app

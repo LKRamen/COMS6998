@@ -1,32 +1,31 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-
+const { visits, getUser } = vi.hoisted(() => ({visits: vi.fn(), getUser: vi.fn()}));
+vi.mock("../lib/travel", () => ({ getCommunityVisits: visits }));
+vi.mock("../lib/supabase/server", () => ({ createClient: async () => ({auth:{getUser}}) }));
+vi.mock("./auth/actions", () => ({signOut: vi.fn()}));
 import Home from "./page";
-
-describe("Home", () => {
-  afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
-  it("renders the public ranking", async () => {
-    vi.stubEnv("supabase_project_url", "https://example.supabase.co");
-    vi.stubEnv("supabase_anon_key", "public-key");
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => [{ rank: 1, country: "India", population_count: 1477000000, estimate_year: 2026 }] }));
+describe("public travel map", () => {
+  afterEach(() => { cleanup(); vi.resetAllMocks(); });
+  it("shows aggregate visits and a sign-in invitation to guests", async () => {
+    visits.mockResolvedValue([{country_code:"840",visitor_count:3}]);
+    getUser.mockResolvedValue({data:{user:null}});
     render(await Home());
-
-    expect(
-      screen.getByRole("heading", { level: 1, name: "Countries by population" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText("India")).toBeInTheDocument();
+    expect(screen.getByRole("heading", {level:1})).toHaveTextContent("One shared map.");
+    expect(screen.getByRole("button", {name:"United States: 3 travelers"})).toBeInTheDocument();
+    expect(screen.getByText("3 travelers")).toBeInTheDocument();
+    expect(screen.getByRole("link",{name:/Start your map/})).toHaveAttribute("href","/login");
   });
-  it("loads rankings with the standard Supabase environment variables", async () => {
-    vi.stubEnv("supabase_project_url", "");
-    vi.stubEnv("supabase_anon_key", "");
-    vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://standard.supabase.co");
-    vi.stubEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", "standard-public-key");
-    const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => [] });
-    vi.stubGlobal("fetch", fetchMock);
-    await Home();
-    expect(fetchMock).toHaveBeenCalledWith(
-      expect.objectContaining({ origin: "https://standard.supabase.co" }),
-      expect.objectContaining({ headers: expect.objectContaining({ apikey: "standard-public-key" }) }),
-    );
+  it("shows member navigation to authenticated users", async () => {
+    visits.mockResolvedValue([]); getUser.mockResolvedValue({data:{user:{id:"owner"}}});
+    render(await Home());
+    expect(screen.getByRole("link",{name:"My travels"})).toHaveAttribute("href","/members");
+    expect(screen.getByText(/No trips recorded yet/)).toBeInTheDocument();
+  });
+  it("reports loading failures instead of presenting empty counts as real data", async () => {
+    visits.mockRejectedValue(new Error("offline")); getUser.mockResolvedValue({data:{user:null}});
+    render(await Home());
+    expect(screen.getByRole("alert")).toHaveTextContent("couldn’t load visit counts");
+    expect(screen.queryByRole("region",{name:"Community travel map"})).not.toBeInTheDocument();
   });
 });

@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Countries by Population",
+  title: "Been there · A shared travel atlas",
   description:
-    "The 15 most populous countries, ranked by 2026 population estimates.",
+    "Map the countries you have visited and explore the places our community has been.",
 };
 
 export default function RootLayout({

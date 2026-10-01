@@ -1,142 +1,33 @@
 import Link from "next/link";
-
-type CountryPopulation = {
-  rank: number;
-  country: string;
-  population_count: number;
-  estimate_year: number;
-};
-
-const populationFormatter = new Intl.NumberFormat("en-US");
+import { createClient } from "../lib/supabase/server";
+import { getCommunityVisits, type VisitCount } from "../lib/travel";
+import { countries } from "../lib/countries";
+import WorldMap from "./components/world-map";
+import TravelNav from "./components/travel-nav";
 
 export const dynamic = "force-dynamic";
-
-async function getCountryPopulations(): Promise<CountryPopulation[]> {
-  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.supabase_project_url;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.supabase_anon_key;
-
-  if (!projectUrl || !anonKey) {
-    throw new Error("Supabase environment variables are missing.");
-  }
-
-  const endpoint = new URL(
-    "/rest/v1/most_populous_countries",
-    projectUrl.endsWith("/") ? projectUrl : `${projectUrl}/`,
-  );
-  endpoint.searchParams.set(
-    "select",
-    "rank,country,population_count,estimate_year",
-  );
-  endpoint.searchParams.set("order", "rank.asc");
-
-  const response = await fetch(endpoint, {
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
-      Accept: "application/json",
-    },
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Supabase returned HTTP ${response.status}.`);
-  }
-
-  return (await response.json()) as CountryPopulation[];
-}
-
 export default async function Home() {
-  let countries: CountryPopulation[] = [];
-  let loadFailed = false;
-
+  let counts: VisitCount[] = [];
+  let failed = false;
+  let signedIn = false;
   try {
-    countries = await getCountryPopulations();
-  } catch (error) {
-    loadFailed = true;
-    console.error("Could not load country population data.", error);
-  }
-
-  const estimateYear = countries[0]?.estimate_year ?? 2026;
-
-  return (
-    <main className="population-page">
-      <div className="page-frame">
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link href="/">World population</Link>
-          <div><Link href="/members">Members</Link><Link href="/profile">Profile</Link><Link href="/login">Sign in</Link></div>
-        </nav>
-        <header className="page-heading">
-          <p className="eyebrow">WORLD POPULATION / {estimateYear}</p>
-          <h1>Countries by population</h1>
-          <p className="page-intro">
-            The 15 most populous countries, ranked by estimated population.
-          </p>
-        </header>
-
-        <section className="population-section" aria-labelledby="ranking-title">
-          <div className="section-heading">
-            <div>
-              <h2 id="ranking-title">Population ranking</h2>
-              <p>Counts rounded to the nearest million</p>
-            </div>
-            <span className="row-count">
-              {loadFailed
-                ? "Unavailable"
-                : `${countries.length.toString().padStart(2, "0")} countries`}
-            </span>
-          </div>
-
-          {loadFailed ? (
-            <div className="notice" role="alert">
-              <h3>Population data is unavailable right now.</h3>
-              <p>Please try again in a little while.</p>
-            </div>
-          ) : countries.length === 0 ? (
-            <div className="notice" role="status">
-              <h3>No population records found.</h3>
-              <p>There are no countries to display yet.</p>
-            </div>
-          ) : (
-            <div className="table-scroll">
-              <table className="population-table">
-                <thead>
-                  <tr>
-                    <th scope="col" className="rank-column">
-                      Rank
-                    </th>
-                    <th scope="col">Country</th>
-                    <th scope="col" className="population-column">
-                      Population
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {countries.map((country) => (
-                    <tr key={country.rank}>
-                      <td className="rank-cell">
-                        {country.rank.toString().padStart(2, "0")}
-                      </td>
-                      <th scope="row" className="country-cell">
-                        {country.country}
-                      </th>
-                      <td className="population-cell">
-                        {populationFormatter.format(country.population_count)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-
-        <footer className="page-footer">
-          <span>Source: UN World Population Prospects 2024, medium variant.</span>
-          <a href="https://population.un.org/wpp/" target="_blank" rel="noreferrer">
-            About the data
-          </a>
-        </footer>
-      </div>
-    </main>
-  );
+    const supabase = await createClient();
+    const [visits, session] = await Promise.all([getCommunityVisits(), supabase.auth.getUser()]);
+    counts = visits; signedIn = Boolean(session.data.user);
+  } catch { failed = true; }
+  const total = counts.reduce((sum,row) => sum + Number(row.visitor_count), 0);
+  const ranked = counts.map(row => ({ ...row, name: countries.find(country => country.code === row.country_code)?.name ?? row.country_code }))
+    .sort((a,b) => Number(b.visitor_count) - Number(a.visitor_count) || a.name.localeCompare(b.name));
+  return <main className="travel-page"><div className="travel-frame">
+    <TravelNav signedIn={signedIn} current="community"/>
+    <header className="travel-heading"><div><p className="eyebrow">A SHARED ATLAS OF PLACES WE’VE BEEN</p><h1>A world of places.<br/><span>One shared map.</span></h1><p className="page-intro">From a first trip to a familiar favorite. See where our community has been, and start mapping your own story.</p></div>
+      <div className="travel-stat"><strong>{failed ? "—" : counts.length.toString().padStart(2,"0")}</strong><span>countries &amp; territories explored</span><small>{failed ? "Counts temporarily unavailable" : `${total} personal ${total === 1 ? "visit" : "visits"} recorded`}</small></div>
+    </header>
+    {failed ? <div className="notice" role="alert"><h2>The community map is taking a moment.</h2><p>We couldn’t load visit counts. Please refresh to try again.</p></div> : <><WorldMap counts={counts}/>
+      <div className="community-bottom"><section className="community-list"><div className="ledger-heading"><h2>Places on our map</h2><span>{counts.length} explored</span></div>
+        {ranked.length ? <ul>{ranked.map(country => <li key={country.country_code}><span>{country.name}</span><span>{country.visitor_count} {Number(country.visitor_count) === 1 ? "traveler" : "travelers"}</span></li>)}</ul> : <p>No trips recorded yet. Be the first to put a country on the map.</p>}
+      </section><aside className="map-invitation"><p className="eyebrow">MAKE IT YOURS</p><h2>Your travels belong<br/>on the map.</h2><p>Keep a personal list of the countries you’ve visited. Every new entry adds to our shared picture of the world.</p><Link className="button" href={signedIn ? "/members" : "/login"}>{signedIn ? "Open my travels" : "Sign in with Google"} <span aria-hidden="true">↗</span></Link></aside></div>
+    </>}
+    <footer className="travel-footer"><span>More travelers. Deeper color. Every country counts once per person.</span><a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Map data: Natural Earth</a><span>Countries &amp; territories · illustrative boundaries</span></footer>
+  </div></main>;
 }
