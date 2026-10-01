@@ -8,6 +8,33 @@
   --line: #e1e7e2;
 }
 
+.site-nav, .site-nav > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+.site-nav { padding-bottom: 26px; font-size: 14px; }
+.site-nav a, .account-links a, .account-link a { color: var(--accent); text-underline-offset: 4px; }
+.account-page { min-height: 100vh; padding: 72px 20px; }
+.account-card { max-width: 580px; margin: auto; background: var(--surface); padding: 40px; border: 1px solid var(--line); border-radius: 16px; }
+.account-card h1 { font-size: clamp(30px, 5vw, 42px); letter-spacing: -0.04em; margin: 0; overflow-wrap: anywhere; }
+.account-card h2 { font-size: 20px; }
+.account-card .page-intro { margin-bottom: 24px; }
+.button { display: inline-block; border: 0; border-radius: 8px; padding: 14px 20px; font: inherit; font-weight: 600; background: var(--accent); color: white; cursor: pointer; }
+.button:disabled { opacity: .5; cursor: not-allowed; }
+.profile-form { display: grid; gap: 18px; margin-top: 24px; }
+.profile-form label { display: grid; gap: 8px; font-size: 14px; font-weight: 600; }
+.profile-form input { width: 100%; min-width: 0; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--page); color: var(--ink); font: inherit; }
+.profile-form input[type=file] { padding: 10px; font-size: 12px; }
+.field-help { margin: -12px 0 0; color: var(--muted); font-size: 12px; }
+.optional { font-weight: 400; color: var(--muted); }
+.account-email { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.avatar { border-radius: 50%; object-fit: cover; margin: 12px 0; }
+.account-links { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 28px; font-size: 14px; }
+.text-button { border: 0; background: transparent; padding: 0; font: inherit; color: var(--accent); text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.account-link { font-size: 14px; margin-top: 24px; }
+.form-message { padding: 14px; border-radius: 8px; background: #fff1ed; color: #8b301c; font-size: 14px; line-height: 1.5; }
+.form-message.success { color: var(--accent); background: #eaf4ed; }
+.member-note { border-top: 1px solid var(--line); padding-top: 16px; line-height: 1.6; }
+a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 600px) { .account-page { padding: 32px 16px; } .account-card { padding: 26px 20px; } .site-nav, .site-nav > div { gap: 16px; } }
+
 * {
   box-sizing: border-box;
 }

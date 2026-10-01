@@ -2,3 +2,9 @@ node_modules/
 .next/
 .eslintcache
 coverage/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+work/
+.vercel/

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type CountryPopulation = {
   rank: number;
   country: string;
@@ -10,8 +12,8 @@ const populationFormatter = new Intl.NumberFormat("en-US");
 export const dynamic = "force-dynamic";
 
 async function getCountryPopulations(): Promise<CountryPopulation[]> {
-  const projectUrl = process.env.supabase_project_url;
-  const anonKey = process.env.supabase_anon_key;
+  const projectUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.supabase_project_url;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.supabase_anon_key;
 
   if (!projectUrl || !anonKey) {
     throw new Error("Supabase environment variables are missing.");
@@ -59,6 +61,10 @@ export default async function Home() {
   return (
     <main className="population-page">
       <div className="page-frame">
+        <nav className="site-nav" aria-label="Main navigation">
+          <Link href="/">World population</Link>
+          <div><Link href="/members">Members</Link><Link href="/profile">Profile</Link><Link href="/login">Sign in</Link></div>
+        </nav>
         <header className="page-heading">
           <p className="eyebrow">WORLD POPULATION / {estimateYear}</p>
           <h1>Countries by population</h1>
