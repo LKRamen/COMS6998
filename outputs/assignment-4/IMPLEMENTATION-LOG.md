@@ -41,3 +41,7 @@
 ## Post-location pivot, 2026-10-08
 
 User authorized location search, location required at publication, post-derived personal/community maps, author location corrections and production deployment. Implemented in 4a2acd0. Live migration applied through the scoped server. 72 unit/component tests, lint, production build/typecheck, isolated and live rollback map/permission checks, and real hosted Auth/Storage upload/replacement checks passed. Independent review found no blockers. User took over interactive QA; stopped further Browser work and task-owned local servers. Production deployment dpl_FZtjEYGsFJRZ6eRgCVpBVozvd4B7 READY; both public URLs pass feed/atlas/filter/place-search and guest-login checks. See LOCATION-PIVOT.md and LOCATION-DEPLOYMENT.json.
+
+## Full-photo display, 2026-10-08
+
+User requested either the full image or a user-controlled crop. Selected the full-image option: feed and My creations photos now use their natural aspect ratio at card width, with fixed desktop/mobile cropping heights removed. Production build/typecheck passed. No new mutation or crop editor added. Hands-on visual acceptance remains with the user under their standing preference.
