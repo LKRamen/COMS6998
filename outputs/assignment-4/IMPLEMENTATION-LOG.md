@@ -47,3 +47,7 @@ User authorized location search, location required at publication, post-derived 
 User requested either the full image or a user-controlled crop. Selected the full-image option: feed and My creations photos now use their natural aspect ratio at card width, with fixed desktop/mobile cropping heights removed. Production build/typecheck passed. No new mutation or crop editor added. Hands-on visual acceptance remains with the user under their standing preference.
 
 Full-photo production deployment dpl_HNsehEyiFK7hgtb9BcKHEkPbzJ8G is READY. Main-site HTTP and served stylesheet checks confirm height:auto and removal of fixed 330px/280px crop rules. Source commit602e9d6; immutable URL https://coms-6998-cslv30eyn-lkr2124-2742s-projects.vercel.app. No browser automation or temporary server was started for this change.
+
+## Masonry post board, 2026-10-08
+
+User requested a Pinterest-style board to remove the whitespace caused by equal-height grid rows. Feed and My creations now use two CSS columns on desktop and one on mobile, with unsplit cards sized to their own photo/caption contents and a 24px gutter. Full-photo aspect ratios are retained. Build/typecheck passed. No JavaScript dependency or new mutation added; visual acceptance remains with the user.
