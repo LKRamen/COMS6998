@@ -15,9 +15,9 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   return <main className="account-page"><div className="account-card">
     <p className="eyebrow">BEEN THERE / YOUR ACCOUNT</p>
     <h1>Welcome back.</h1>
-    <p className="page-intro">Sign in to manage your profile and track the countries you’ve visited. New here? Your Google account gets you started.</p>
+    <p className="page-intro">Sign in to turn your travel photos into captions, share a favorite, and rate community creations. Your Google account gets you started.</p>
     {error && <p role="alert" className="form-message">Sign-in could not be completed. Please try again.</p>}
     <form action={signInWithGoogle}><button className="button" type="submit">Continue with Google</button></form>
-    <p className="account-link"><Link href="/">Back to community map</Link></p>
+    <p className="account-link"><Link href="/">Back to caption feed</Link></p>
   </div></main>;
 }

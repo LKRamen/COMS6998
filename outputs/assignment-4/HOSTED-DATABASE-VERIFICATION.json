@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-08",
+  "projectRef": "swmgfanscadzfkqoctle",
+  "migration": "20261008112237_caption_community",
+  "publicApplicationTablesWithRls": [
+    "caption_votes",
+    "captions",
+    "country_visits",
+    "generation_requests",
+    "generation_runs",
+    "moments",
+    "most_populous_countries",
+    "photo_cleanup_requests",
+    "profiles",
+    "travel_countries"
+  ],
+  "adaptedRollbackSuitesPassed": [
+    "database-verification.sql",
+    "database-regressions.sql"
+  ],
+  "functionGrantAudit": "Public feed/photo visibility callable by guests; mutations restricted to authenticated profiles; reserve/finish/fail/replace restricted to service_role.",
+  "managedInternalSchemasAltered": false,
+  "baselineAfterSyntheticChecks": {
+    "profiles": 2,
+    "moments": 0,
+    "generationRuns": 0,
+    "captionPhotos": 0
+  },
+  "advisorToolsAvailable": false
+}

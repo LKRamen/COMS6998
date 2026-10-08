@@ -13,11 +13,22 @@ Checked 2026-10-08 on local branch `codex/ai-travel-captions`.
 - Added a private creation error boundary using the installed Next.js `retry` contract. Its regression test verifies that private error details stay hidden and retry is invoked. Desktop/mobile fixture inspection verified spaced controls and no overflow (390px viewport, 375px content width).
 - Task-owned temporary QA servers were stopped, with ports 3100 and 3101 verified closed at their respective completion checks.
 
+## Verified against the hosted project
+
+- The scoped MCP connection and private application key are accepted. Migration `20261008112237_caption_community` applied successfully.
+- All ten public application tables have RLS enabled. Existing profile/visit owner policies and public country catalogs were inspected and preserved. Internal Supabase-managed schemas were not modified.
+- Both SQL rollback suites passed after adapting them to existing complete-profile account IDs and scoping Storage counts to the caption bucket. They left no persisted fixture rows.
+- Real Auth sessions for two task-created disposable accounts passed private photo/draft isolation, generation reservations through separate HTTP requests, actual Gemini generation and regeneration persistence, quota/failure behavior, publication, guest/self-vote denial, vote persistence/change/removal, signed URL expiration and deletion cleanup provenance. See `HOSTED-API-VERIFICATION.json`.
+- Gemini 3.5 Flash returned HTTP 200 for both actual generation calls. The app is configured to use it. Earlier 3.8 requests returned HTTP 503; 2.5 was unavailable to new users. No automatic paid fallback or billing upgrade was added.
+- Actual local Next upload route passed guest/cross-origin denial, authenticated PNG-to-JPEG normalization/resize/private draft persistence and replacement cleanup ledger checks with a real hosted Auth session. See `UPLOAD-ROUTE-VERIFICATION.json`.
+- Temporary accounts, captions and photos were removed; final database counts returned to two original profiles, zero moments/runs and zero caption photos. No original user data was deleted.
+
 ## Still required
 
-- Fully restart Codex so the configured Windows User token reaches `supabase-coms6998`. Verify token acceptance, inspect the real schema, apply the migration and audit RLS on every existing exposed table.
-- Add `SUPABASE_SERVICE_ROLE_KEY` privately to the app's ignored `.env`. MCP credentials do not supply this application value.
-- Run actual two-user/guest flows, private Storage HTTP checks and simultaneous transactions against the scoped project. Adapt synthetic Auth fixtures before any hosted SQL check.
-- Inspect complete screens with live data, obtain PM feedback and iterate, then deploy and verify the commit-specific Vercel URL in incognito with deployment protection disabled.
+- Complete signed-in browser creation/upload/editor/publication checks, then mobile inspection with live data.
+- Exercise simultaneous photo replacement/publication/deletion cases against the hosted service. Reservation and vote concurrency were checked; this does not prove every race.
+- Obtain PM feedback and iterate; deploy and verify the commit-specific Vercel URL in incognito with deployment protection disabled.
+- Updated login copy was visually checked at 1440px and 390px; mobile content width was 390px with no horizontal overflow. The live browser is awaiting the user's Google sign-in.
+- Scoped MCP exposes database tools only; a security/performance advisor tool is unavailable. Catalog/RLS/grant inspection and runtime checks were completed instead.
 
-No live caption migration, push or deployment has been performed. Local verification does not establish a completed assignment submission. See `SETUP.md` for restart and integration steps.
+The caption migration is live. No branch push or deployment has been performed. Integration evidence does not yet establish a completed assignment submission.

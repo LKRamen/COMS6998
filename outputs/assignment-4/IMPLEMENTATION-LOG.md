@@ -22,3 +22,12 @@
 - Independent final review found no remaining important defects in the reviewed changes. Temporary fixture QA server was stopped; port 3101 verified closed. Infrastructure integration and release remain pending.
 
 - Private creation read failures now reach a sanitized retry screen with links back to saved creations/feed. Regression failed against an empty fallback before implementation; 61 tests/18 files then passed. Production build/type check and lint passed. Browser fixture confirmed desktop/mobile wrapping and retry interaction; task-owned session 64033 stopped and port 3101 closed. Hosted failure/recovery still requires integration.
+
+## Hosted integration, 2026-10-08 morning
+
+- User supplied the missing server key and enabled the scoped MCP connection. Verified the project URL/key without revealing credentials; inspected schemas/policies before applying the additive migration. All ten public application tables have RLS enabled. Both adapted hosted rollback suites passed.
+- Real Auth/Storage/RPC checks passed with two disposable accounts. Successful Gemini batches and regeneration persisted exact prompts/photo/request metadata; votes persisted and remained one row under concurrent requests; quota/failure/expiration/deletion checks passed. All task-created accounts/photos/rows were cleaned up and baseline counts verified.
+- Model adjustment: 3.8 returned 503; 2.5 returned 404 and a new-user restriction. 3.5 Flash returned two successful actual provider responses and is now configured locally. No billing upgrade. Report saved in HOSTED-API-VERIFICATION.json.
+- Started and registered task-owned local Next server session 14220 for browser integration. User agreed to sign in; browser is at Google account selection. Browser upload/editor acceptance remains pending. Login copy now reflects caption creation/rating and links to the caption feed.
+
+- Actual Next photo upload route passed real hosted-session checks: guest/cross-origin denial, PNG normalized to a 1600px JPEG without EXIF, saved private draft and replacement cleanup ledger. Synthetic account/photo artifacts were removed. Evidence: UPLOAD-ROUTE-VERIFICATION.json.

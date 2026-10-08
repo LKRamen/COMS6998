@@ -37,7 +37,7 @@ Interfaces: public RPCs `caption_feed(p_sort,p_offset)`, `caption_vote(p_caption
 - [x] Write rollback authorization/assertion tests: guest denied writes; user B cannot read user A's draft; self-vote denied; duplicate vote retains one row; six batches denied; deletion does not erase usage.
 - [x] Implement tables, grants/RLS, immutable fields, owner Storage, public projection, locked quota transactions and cleanup ledger.
 - [x] Parse/verify SQL locally.
-- [ ] Apply and run adapted rollback tests against the hosted project when scoped MCP is available.
+- [x] Apply and run adapted rollback tests against the hosted project through the scoped MCP server.
 
 ## Task 2 — provider, validation and data services
 
@@ -79,4 +79,4 @@ Files: `.env.example`, `outputs/assignment-4/SETUP.md`, `VERIFICATION.md`, `IMPL
 
 ## Execution choice
 
-Implement sequentially in this session under the user's explicit instruction to begin. Infrastructure questions remain pending; local implementation and review continue independently. A real provider smoke check passed. Live migration and application integration remain incomplete until the scoped server and private application service key are available.
+Implement sequentially in this session under the user's explicit instruction to begin. Infrastructure questions remain pending; local implementation and review continue independently. A real provider smoke check passed. The scoped server/key are verified, the live migration is applied and hosted API/upload-route integration passed. Signed-in browser acceptance and release remain pending.

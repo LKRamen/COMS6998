@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-08T11:28:54.030Z",
+  "providerResponses": [
+    {
+      "httpStatus": 200,
+      "errorStatus": null
+    },
+    {
+      "httpStatus": 200,
+      "errorStatus": null
+    }
+  ],
+  "checks": [
+    "Private draft/photo isolation and guest mutation denial",
+    "Separate HTTP requests permit only one pending generation",
+    "Real Gemini batch persisted with exact prompts, photo and request provenance",
+    "Regeneration preserves both saved three-caption batches",
+    "Failed request does not charge quota; sixth successful batch denied",
+    "One selected caption and photo public; private prompts hidden; guest/self-votes denied",
+    "Vote persists in public score; concurrent requests keep one row; change/removal works",
+    "Expired signed photo URL denied",
+    "Deletion removes publication, preserves quota and queues exact photo cleanup"
+  ],
+  "passed": true,
+  "failure": null,
+  "scope": "Hosted Auth, REST RPC, Storage and actual Gemini provider with two task-created disposable accounts. UI and upload route not exercised.",
+  "syntheticAccountsRemoved": 2,
+  "model": "gemini-3.5-flash",
+  "earlierAttempts": [
+    "gemini-3.8-flash: HTTP 503 UNAVAILABLE",
+    "gemini-2.5-flash: HTTP 404; provider reports unavailable to new users"
+  ]
+}

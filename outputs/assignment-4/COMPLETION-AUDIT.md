@@ -1,18 +1,20 @@
 # Assignment 4 completion audit
 
-Local implementation is prepared; the assignment is not yet ready to submit.
+Implementation and hosted API integration are verified. The assignment is not yet ready to submit.
 
-| Requirement | Evidence | Remaining acceptance work |
+| Requirement | Current authoritative evidence | Remaining acceptance work |
 | --- | --- | --- |
-| Logged-in users create AI captions | Protected creation actions, validated photo upload, real provider smoke | Save and reload a real hosted generation |
-| Three choices and regeneration | Component/action tests, current-photo history filtering | Exercise real saved batches and five-success limit |
-| Publish one selected caption | Atomic immutable publication and private selection tests | Publish using an authenticated account |
-| Votes insert associated user/caption rows | Rollback SQL and session-bound desired-state vote tests | Two real users, refresh persistence, self-vote denial |
-| Immediate net score | Component tests and browser fixture interaction | Hosted vote success/failure and score refresh |
-| Save prompts and generated media | Private generation rows include prompts, model/settings, photo path and request key | Inspect hosted persistence and owner isolation |
-| Strict RLS on all tables | New-table grants/policies and isolated role assertions | Audit existing exposed tables and actual hosted policies |
-| Thoughtful travel product loop | Approved scope, new/top feed, private drafts, retained atlas | PM feedback and iteration |
-| Reliable error behavior | Invalid provider response, timeout, mutation and pagination recovery tests | Real network/provider/database failure checks |
-| Public incognito deployment | Local production build passed | Release, disable protection, verify commit-specific URL |
+| Logged-in users create AI captions | Real hosted Auth sessions; actual upload route normalizes/stores photo; actual Gemini batch saved | Browser upload/editor flow |
+| Three choices and regeneration | Two actual saved three-caption Gemini batches and reload check | Browser choice/regeneration interaction |
+| Publish one selected caption | Hosted authenticated publication, selected text matches guest projection | Browser publication preview/submit |
+| Votes insert associated user/caption rows | Hosted two-user RPC, persistent score and concurrent one-row assertion | Browser vote interaction with live data |
+| Immediate net score | Component/browser fixture checks and hosted desired-state response | Combined browser + hosted vote success/failure |
+| Save prompts and generated media | Hosted exact prompt/photo/request provenance assertions | Browser private history inspection |
+| Strict RLS on all application tables | All ten public tables RLS-enabled; policy/grant audit and hosted role/Storage denials | Managed internal schemas remain managed by Supabase |
+| Five successful batches/day | Hosted quota/failure/deletion assertions, Eastern reset in SQL | Confirm reset after a real day boundary when practical |
+| Preserve existing maps | Existing real atlas observed; original visits/profile counts preserved | Final deployment regression |
+| Reliable error behavior | Provider 503 recovery, stale/expired SQL tests, actual guest/cross-origin upload denial | Browser failure paths and remaining hosted replacement/deletion races |
+| Thoughtful travel product loop | Approved spec, implemented feed/drafts/captions/voting | PM feedback and iteration |
+| Public incognito deployment | Local production build passed | Vercel environment/release, disable protection, verify commit-specific URL |
 
-The immediate blockers are the current Codex process missing the newly configured MCP token and the app missing its private Supabase service key. The token is configured for future sessions; its acceptance has not been verified. See `SETUP.md`.
+Evidence: `HOSTED-API-VERIFICATION.json`, `UPLOAD-ROUTE-VERIFICATION.json`, and `VERIFICATION.md`. No original user rows/photos were modified by synthetic API checks; task-created accounts and artifacts were removed. Both hosted SQL suites rolled back.
