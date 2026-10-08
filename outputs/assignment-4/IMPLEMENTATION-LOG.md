@@ -45,3 +45,5 @@ User authorized location search, location required at publication, post-derived 
 ## Full-photo display, 2026-10-08
 
 User requested either the full image or a user-controlled crop. Selected the full-image option: feed and My creations photos now use their natural aspect ratio at card width, with fixed desktop/mobile cropping heights removed. Production build/typecheck passed. No new mutation or crop editor added. Hands-on visual acceptance remains with the user under their standing preference.
+
+Full-photo production deployment dpl_HNsehEyiFK7hgtb9BcKHEkPbzJ8G is READY. Main-site HTTP and served stylesheet checks confirm height:auto and removal of fixed 330px/280px crop rules. Source commit602e9d6; immutable URL https://coms-6998-cslv30eyn-lkr2124-2742s-projects.vercel.app. No browser automation or temporary server was started for this change.

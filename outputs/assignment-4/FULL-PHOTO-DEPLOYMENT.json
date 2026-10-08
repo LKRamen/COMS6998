@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-08T17:31:40.765Z",
+  "passed": true,
+  "url": "https://coms-6998-theta.vercel.app",
+  "deploymentUrl": "https://coms-6998-cslv30eyn-lkr2124-2742s-projects.vercel.app",
+  "commit": "602e9d6",
+  "fullPhotoRule": true,
+  "fixedDesktopMobileCroppingRemoved": true,
+  "visualAcceptance": "User handles visual acceptance; no further browser automation."
+}
