@@ -16,3 +16,11 @@ it("rejects malformed paging before touching the database", async () => {
  expect(await loadMoreFeed("new",10020)).toMatchObject({ ok: false });
  expect(client).not.toHaveBeenCalled();
 });
+it("keeps country filtering on subsequent pages and rejects invalid countries", async () => {
+ feed.mockResolvedValue([]);
+ await loadMoreFeed("new",20,"840");
+ expect(feed).toHaveBeenCalledWith("new",20,expect.any(Object),undefined,"840");
+ client.mockClear();
+ expect(await loadMoreFeed("new",20,"US")).toMatchObject({ok:false});
+ expect(client).not.toHaveBeenCalled();
+});

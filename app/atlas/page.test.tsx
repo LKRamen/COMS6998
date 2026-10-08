@@ -12,20 +12,20 @@ describe("public travel map", () => {
     getUser.mockResolvedValue({data:{user:null}});
     render(await Home());
     expect(screen.getByRole("heading", {level:1})).toHaveTextContent("One shared map.");
-    expect(screen.getByRole("button", {name:"United States: 3 travelers"})).toBeInTheDocument();
-    expect(screen.getByText("3 travelers")).toBeInTheDocument();
+    expect(screen.getByRole("button", {name:"United States: 3 posts"})).toBeInTheDocument();
+    expect(screen.getByText("3 posts")).toBeInTheDocument();
     expect(screen.getByRole("link",{name:"Sign in"})).toHaveAttribute("href","/login");
   });
   it("shows member navigation to authenticated users", async () => {
     visits.mockResolvedValue([]); getUser.mockResolvedValue({data:{user:{id:"owner"}}});
     render(await Home());
     expect(screen.getByRole("link",{name:"My travels"})).toHaveAttribute("href","/members");
-    expect(screen.getByText(/No trips recorded yet/)).toBeInTheDocument();
+    expect(screen.getByText(/No posts published yet/)).toBeInTheDocument();
   });
   it("reports loading failures instead of presenting empty counts as real data", async () => {
     visits.mockRejectedValue(new Error("offline")); getUser.mockResolvedValue({data:{user:null}});
     render(await Home());
-    expect(screen.getByRole("alert")).toHaveTextContent("couldn’t load visit counts");
-    expect(screen.queryByRole("region",{name:"Community travel map"})).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("couldn’t load post counts");
+    expect(screen.queryByRole("region",{name:"Community post locations map"})).not.toBeInTheDocument();
   });
 });

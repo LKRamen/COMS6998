@@ -5,9 +5,10 @@ import { createAdminClient } from "../../lib/supabase/admin";
 import { getMoment, retryPhotoCleanup } from "../../lib/captions";
 import { buildPrompts, isUuid, parseInputs, parseVote, type CaptionInputs } from "../../lib/caption-input";
 import { generateCaptions, geminiConfig, generationSettings } from "../../lib/ai/gemini";
+import { parseLocation, type SelectedLocation } from "../../lib/locations";
 type Result = { ok: true; message?: string } | { ok: false; error: string };
 function failure(error: unknown): { ok: false; error: string } { return { ok: false, error: error instanceof Error ? error.message : "That action could not be completed. Please try again." }; }
-function refresh(id?: string) { revalidatePath("/"); revalidatePath("/creations"); if (id) revalidatePath(`/creations/${id}`); }
+function refresh(id?: string) { revalidatePath("/"); revalidatePath("/atlas"); revalidatePath("/members"); revalidatePath("/creations"); if (id) revalidatePath(`/creations/${id}`); }
 function idCheck(...ids: unknown[]) { if (!ids.every(isUuid)) throw new Error("This post is unavailable."); }
 export async function castVote(captionId: string, value: -1 | 1 | null): Promise<({ ok: true; vote: -1 | 1 | null; score: number }) | { ok: false; error: string }> {
  const { supabase } = await requireCompleteProfile();
@@ -71,4 +72,12 @@ export async function cleanupPhotos(): Promise<Result> {
  const { supabase, user } = await requireCompleteProfile();
  try { const pending = await retryPhotoCleanup(supabase, user.id); return { ok: true, message: pending ? "Some photos still need cleanup. Please try again later." : "Photo cleanup complete." }; }
  catch (error) { return failure(error); }
+}
+export async function savePostLocation(id: string, location: SelectedLocation | null): Promise<Result> {
+ const { supabase } = await requireCompleteProfile();
+ try {
+  idCheck(id); const selected = parseLocation(location);
+  const { error } = await supabase.rpc("caption_set_location", { p_moment_id: id, p_label: selected?.label ?? "", p_country_code: selected?.country_code ?? null });
+  if (error) throw new Error(error.message); refresh(id); return { ok: true, message: "Location saved. Your maps are up to date." };
+ } catch (error) { return failure(error); }
 }

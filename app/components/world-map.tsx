@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useId, useState } from "react";
 import shapes from "../../lib/data/world-map.json";
 import { countries } from "../../lib/countries";
@@ -14,11 +15,11 @@ export default function WorldMap({ counts, personal = false }: { counts: VisitCo
   const max = Math.max(1, ...byCode.values());
   const chosen = countries.find(country => country.code === selected);
   const chosenCount = selected ? byCode.get(selected) ?? 0 : 0;
-  return <section className="atlas" aria-label={personal ? "Your visited countries map" : "Community travel map"}>
+  return <section className="atlas" aria-label={personal ? "Your published post locations map" : "Community post locations map"}>
     <div className="map-topline"><span>{personal ? "YOUR TRAVEL ATLAS" : "THE COMMUNITY ATLAS"}</span><span>Click a country to explore</span></div>
     <div className="map-scroll" tabIndex={0} aria-label="Scrollable world map">
       <svg viewBox="0 0 1100 540" role="group" aria-labelledby={titleId} style={{ width: `${zoom * 100}%`, minWidth: "100%" }}>
-        <title id={titleId}>{personal ? "Countries you have visited" : "Countries visited by our community"}</title>
+        <title id={titleId}>{personal ? "Countries in your published posts" : "Countries in our community’s published posts"}</title>
         <g>{shapes.map(shape => {
           const count = byCode.get(shape.code) ?? 0;
           const known = knownCodes.has(shape.code);
@@ -27,19 +28,19 @@ export default function WorldMap({ counts, personal = false }: { counts: VisitCo
             <path d={shape.path ?? undefined} className="map-country" fill="#23634e" fillOpacity={personal ? (count ? 1 : 0) : visitOpacity(count, max)}
               stroke={selected === shape.code ? "#132f25" : "#f4f7f3"} strokeWidth={selected === shape.code ? 1.8 : 0.6}
               role={known ? "button" : undefined} tabIndex={known ? 0 : undefined}
-              aria-label={`${shape.name}: ${personal ? (count ? "visited" : "not yet visited") : `${count} ${count === 1 ? "traveler" : "travelers"}`}`}
+              aria-label={`${shape.name}: ${personal ? (count ? "in your published posts" : "no published posts") : `${count} ${count === 1 ? "post" : "posts"}`}`}
               aria-pressed={known ? selected === shape.code : undefined}
               onClick={() => known && setSelected(shape.code)} onKeyDown={event => { if (known && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); setSelected(shape.code); } }}>
-              <title>{shape.name} · {count} {count === 1 ? "traveler" : "travelers"}</title>
+              <title>{shape.name} · {personal ? (count ? "In your published posts" : "No published posts") : `${count} ${count === 1 ? "post" : "posts"}`}</title>
             </path>
           </g>;
         })}</g>
       </svg>
     </div>
     <div className="map-bottomline">
-      <div className="map-readout" aria-live="polite">{chosen ? <><strong>{chosen.name}</strong><span>{personal ? (chosenCount ? "On your travel list" : "Not on your list yet") : `${chosenCount} ${chosenCount === 1 ? "traveler has" : "travelers have"} been here`}</span></> : <><strong>The world, one country at a time.</strong><span>Hover, tap, or use your keyboard to explore.</span></>}</div>
+      <div className="map-readout" aria-live="polite">{chosen ? <><strong>{chosen.name}</strong><span>{personal ? (chosenCount ? "In your published posts" : "No published posts here yet") : `${chosenCount} published ${chosenCount === 1 ? "post" : "posts"} from here`}</span>{chosenCount > 0 && <Link href={`${personal ? "/creations" : "/"}?country=${chosen.code}`}>View {personal ? "your " : ""}posts from {chosen.name} →</Link>}</> : <><strong>The world, one country at a time.</strong><span>Hover, tap, or use your keyboard to explore.</span></>}</div>
       <div className="map-tools"><button type="button" onClick={() => setZoom(Math.max(1, zoom - 0.5))} disabled={zoom === 1} aria-label="Zoom out">−</button><span>{Math.round(zoom * 100)}%</span><button type="button" onClick={() => setZoom(Math.min(3, zoom + 0.5))} disabled={zoom === 3} aria-label="Zoom in">+</button></div>
     </div>
-    <div className="map-legend"><span className="unvisited-key" /> Not visited {personal ? <><span className="visited-key" /> Visited by you</> : <><span className="legend-ramp" /> Fewer travelers <span>→</span> More travelers <span className="legend-max">Highest count: {!counts.length ? 0 : max}</span></>}</div>
+    <div className="map-legend"><span className="unvisited-key" /> No posts {personal ? <><span className="visited-key" /> In your posts</> : <><span className="legend-ramp" /> Fewer posts <span>→</span> More posts <span className="legend-max">Highest count: {!counts.length ? 0 : max}</span></>}</div>
   </section>;
 }

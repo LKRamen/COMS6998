@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-08T17:14:37.112Z",
+  "passed": true,
+  "checks": [
+    "Guest upload denied",
+    "Cross-origin authenticated upload denied",
+    "Authenticated upload stores normalized JPEG and private saved draft",
+    "Replacement preserves old-photo cleanup path"
+  ],
+  "failure": null,
+  "scope": "Actual local Next upload route using a real hosted Auth session; private Storage and REST draft reads; synthetic photo only; task-created account removed"
+}

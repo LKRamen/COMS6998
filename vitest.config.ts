@@ -1,5 +1,5 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
@@ -8,5 +8,6 @@ export default defineConfig({
     pool: "threads",
     maxWorkers: 1,
     setupFiles: ["./tests/setup.ts"],
+    exclude: [...configDefaults.exclude, "work/**"],
   },
 });

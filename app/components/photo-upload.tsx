@@ -1,14 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import LocationSearch from "./location-search";
+import type { SelectedLocation } from "../../lib/locations";
 import { captionStyles } from "../../lib/caption-input";
 import type { CaptionInputs } from "../../lib/caption-input";
-export default function PhotoUpload({ momentId, inputs }: { momentId?: string; inputs?: CaptionInputs }) {
- const router = useRouter(); const [pending, setPending] = useState(false); const [error, setError] = useState("");
+export default function PhotoUpload({ momentId, inputs, selectedLocation }: { momentId?: string; inputs?: CaptionInputs; selectedLocation?: SelectedLocation | null }) {
+ const router = useRouter(); const [pending, setPending] = useState(false); const [error, setError] = useState(""); const [location, setLocation] = useState<SelectedLocation | null>(selectedLocation ?? null); const [query, setQuery] = useState(inputs?.location ?? "");
  async function upload(event: React.FormEvent<HTMLFormElement>) {
   event.preventDefault(); setPending(true); setError("");
   try {
-   const form = new FormData(event.currentTarget); const photo = form.get("photo");
+   const form = new FormData(event.currentTarget); form.set("location", query); if (location) form.set("country_code", location.country_code); const photo = form.get("photo");
    if (!(photo instanceof File) || !photo.size || photo.size > 5 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(photo.type)) throw new Error("Choose a JPEG, PNG or WebP photo under 5 MiB.");
    // Downsize before the request so accepted source photos fit hosted request limits.
    const bitmap = await createImageBitmap(photo, { imageOrientation: "from-image" });
@@ -31,7 +33,7 @@ export default function PhotoUpload({ momentId, inputs }: { momentId?: string; i
   {momentId && <input type="hidden" name="moment_id" value={momentId}/>}
   <label>{momentId ? "Replace this photo" : "Your travel photo"}<input required name="photo" type="file" accept="image/jpeg,image/png,image/webp" disabled={pending}/></label>
   <p className="field-help">One JPEG, PNG or WebP under 5 MiB. Location metadata is removed.</p>
-  <label>Where was this? <span className="optional">Optional</span><input name="location" maxLength={120} placeholder="Central Park, NYC" defaultValue={inputs?.location} disabled={pending}/></label>
+  <LocationSearch value={location} query={query} onChange={setLocation} onQueryChange={setQuery} disabled={pending}/>
   <label>The story behind it <span className="optional">Optional</span><textarea name="context" maxLength={500} rows={3} placeholder="A small discovery, a long journey, or a moment worth remembering." defaultValue={inputs?.context} disabled={pending}/></label>
   <label>Caption style<select name="style" defaultValue={inputs?.style ?? "Funny"} disabled={pending}>{captionStyles.map(style => <option key={style}>{style}</option>)}</select></label>
   <p className="privacy-note">When you generate captions, your photo and context are sent to Google Gemini. On its free tier, Google may use this content to improve its products. Drafts and unselected captions stay private to you.</p>

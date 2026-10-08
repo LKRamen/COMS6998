@@ -2,7 +2,7 @@
 
 Date: 2026-10-08
 
-Status: Approved by the user on 2026-10-08; implemented and verified locally. Hosted API integration is verified; signed-in browser acceptance, PM feedback and final deployment remain pending.
+Status: Original scope and location pivot authorized by the user on 2026-10-08. Caption app deployed; location pivot implementation and verification are recorded in LOCATION-PIVOT.md. Hands-on browser acceptance is delegated to the user at their request; PM feedback remains pending.
 
 Project: `C:\Users\lkrah\COMS6998`
 
@@ -19,24 +19,24 @@ Success means a real user can complete creation, publication, and persistent vot
 | Area | Decision |
 | --- | --- |
 | Identity | Keep the name **Been there** and the travel theme. |
-| Geography | Welcome photos from anywhere; location is optional free text. |
-| Input | One uploaded photo per post, optional context, optional location. |
+| Geography | Welcome photos from anywhere; search specific places, cities, or countries; a selected location is required before publication. |
+| Input | One uploaded photo per post, optional context; location may be omitted in drafts and generation, but must be selected before publishing. |
 | Styles | Funny, Witty, Postcard. |
 | Generation | Three distinct candidate captions per batch; Gemini Developer API. |
 | Regeneration | Generate another batch before publishing; retain earlier batches. |
 | Allowance | Five batches per user per day; initial generation and regenerations count. |
 | Selection | Publish exactly one saved AI caption; no manual caption editing. |
 | Drafts | Persist photo, inputs, and generation batches between visits. |
-| Published content | Photo and caption cannot be edited; creator may delete their post. |
+| Published content | Photo and caption cannot be edited; authors may correct location or delete their post. |
 | Voting | One active upvote/downvote per user and caption; switch or remove it; no self-votes. |
 | Meaning | Rate how well the caption fits the photo, across all three styles. |
 | Score | One net score, upvotes minus downvotes, visible immediately to all readers. |
 | Attribution | Public first name only; no public access to full profile details. |
 | Feed | New by default; Top this week ranks posts published in the past seven days. |
 | Privacy | Only the creator can read drafts, prompts, and unselected captions. |
-| Existing maps | Secondary Travel atlas navigation; preserve travel records. |
+| Existing maps | Secondary personal and community maps derived only from published post locations. Community shading counts posts. Country links filter corresponding posts. Legacy manual visit editing is retired. |
 | Safety | Handle Gemini safety blocks and validate inputs/outputs; no separate moderation service. |
-| Excluded | Individual public post pages, link sharing, comments, follows, notifications, moderation dashboard, report flow, additional AI providers, generated images, and automatic map updates from posts. |
+| Excluded | Individual public post pages, link sharing, comments, follows, notifications, moderation dashboard, report flow, additional AI providers, generated images. |
 
 ## 3. Implementation defaults for review
 
@@ -47,7 +47,7 @@ The following resolve engineering details, rather than introduce new product cho
 - Default style: Funny. Context limit: 500 characters; location limit: 120. Each caption: 1–240 characters after trimming; three nonempty, nonduplicate outputs required.
 - Accept JPEG, PNG, and WebP up to 5 MiB. Check actual file content as well as declared type; normalize orientation and strip metadata before sending the photo to the provider or publishing it. Bound decoding to 20 megapixels and resize the normalized image to at most 1600 pixels on its longest edge.
 - Draft inputs may change. Changing the photo clears the active selection; existing captions remain historical records but cannot be published for a different photo. A caption always keeps the exact input snapshot that generated it. Changes to location/context/style do not rewrite older batches.
-- At publication, use the selected batch's location/style/context snapshot so an old caption cannot silently acquire unrelated new context. Display photo, optional location, style, first name, selected caption, timestamp, and score; context stays private.
+- At publication, use the currently selected place/country for geography and the selected batch's style for the caption. Preserve historical generation context, locations and exact prompts unchanged. Display photo, required selected location, style, first name, selected caption, timestamp, and score; context stays private. Authors may correct geography after publication without changing caption, photo, votes, or generation history.
 - Permit deleting own drafts as well as published posts. Deleting a post removes associated captions, generation records, and vote rows. Daily usage records survive deletion so deleting content cannot replenish allowance.
 - Sort New by publication time descending, then ID. Sort Top this week by net score descending, then publication time descending, then ID. Seven days is a rolling 168-hour window, not a calendar week. Include zero and negative scores.
 - Load 20 posts at a time with a Load more control. No realtime subscription is needed: update the acted-on score immediately and refresh scores when fetching the feed.
@@ -64,8 +64,8 @@ The repository uses Next.js App Router, React, Supabase SSR cookies, Google OAut
 | `/create` | Protected creation page; create a saved draft after successful photo upload. |
 | `/creations` | Protected My creations with drafts and published posts. |
 | `/creations/[id]` | Protected owner-only draft editor, generation history, preview, publish/delete. This is not a public post/share page. |
-| `/atlas` | Existing public community map moved from `/`. |
-| `/members` | Existing protected personal travels page retained. |
+| `/atlas` | Public community map counts published posts by country. |
+| `/members` | Protected personal map marks countries represented by your published posts. |
 | `/profile`, `/login`, `/auth/callback` | Existing account flows preserved. |
 
 Navigation: Feed, Create, My creations, Travel atlas, Profile and Sign out when authenticated. Travel atlas provides access to the community map and My travels. Anonymous users see Feed, Travel atlas, and Sign in.
@@ -244,3 +244,7 @@ No product dependencies, code, database tables, provider configuration, or deplo
 ## 14. Spec review result
 
 Self-review completed for scope coverage, ambiguous publication rules, privacy boundaries, concurrent quota handling, deletion/usage interaction, saved prompt provenance, and assignment acceptance evidence. Proposed engineering defaults are separated from user-accepted product decisions. No unresolved product placeholder remains; provider account availability, live schema audit, and workflow installation are explicit prerequisites rather than assumed completed work.
+
+## Location pivot revision, 2026-10-08
+
+The accepted location/map changes supersede earlier optional-location and manual-map behavior. See [LOCATION-PIVOT.md](LOCATION-PIVOT.md) for detailed rules, provider, migration and validation. The user explicitly requested implementation and production deployment, then chose to perform the hands-on browser check themselves.

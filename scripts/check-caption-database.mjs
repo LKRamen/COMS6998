@@ -18,6 +18,14 @@ try {
  await db.exec(await readFile("supabase/migrations/202610080001_caption_community.sql", "utf8"));
  await db.exec(await readFile("outputs/assignment-4/database-verification.sql", "utf8"));
  await db.exec(await readFile("outputs/assignment-4/database-regressions.sql", "utf8"));
+ await db.exec(`create table public.travel_countries(code text primary key,name text);
+ insert into public.travel_countries values('840','United States'),('392','Japan'),('250','France');
+ create table public.country_visits(user_id uuid references public.profiles(id),country_code text references public.travel_countries(code));
+ alter table public.travel_countries enable row level security;
+ alter table public.country_visits enable row level security;
+ grant select,insert,delete on public.country_visits to authenticated;`);
+ await db.exec(await readFile("supabase/migrations/20261008165700_post_locations.sql", "utf8"));
+ await db.exec(await readFile("outputs/assignment-4/database-location-verification.sql", "utf8"));
  console.log("Database migration and rollback authorization/quota/voting assertions passed in isolated PGlite.");
 } catch (error) { console.error("Database assertion failed:", error.message); process.exitCode = 1; }
 finally { await db.close(); }

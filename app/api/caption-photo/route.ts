@@ -4,6 +4,7 @@ import { createAdminClient } from "../../../lib/supabase/admin";
 import { isProfileComplete, readProfile } from "../../../lib/auth";
 import { normalizePhoto } from "../../../lib/caption-photo";
 import { isUuid, parseInputs } from "../../../lib/caption-input";
+import { parseLocation } from "../../../lib/locations";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 export async function POST(request: Request) {
@@ -26,6 +27,8 @@ export async function POST(request: Request) {
   const form = await new Response(Buffer.concat(chunks), { headers: { "content-type": request.headers.get("content-type") ?? "" } }).formData();
   const photo = form.get("photo"); if (!(photo instanceof File)) throw new Error("Choose a photo.");
   const inputs = parseInputs({ context: form.get("context"), location: form.get("location"), style: form.get("style") });
+  const country = form.get("country_code");
+  const selectedLocation = country ? parseLocation({ label: inputs.location, country_code: country }) : null;
   const replacing = form.get("moment_id");
   if (replacing) {
    if (!isUuid(replacing)) throw new Error("Draft is unavailable.");
@@ -36,9 +39,9 @@ export async function POST(request: Request) {
   const path = `${user.id}/${crypto.randomUUID()}.jpg`;
   const upload = await admin.storage.from("caption-photos").upload(path, bytes, { contentType: "image/jpeg", upsert: false });
   if (upload.error) throw new Error("Your photo could not be uploaded. Please try again.");
-  const value = { creator_id: user.id, photo_path: path, photo_revision: crypto.randomUUID(), ...inputs, selected_caption_id: null };
+  const value = { creator_id: user.id, photo_path: path, photo_revision: crypto.randomUUID(), ...inputs, country_code: selectedLocation?.country_code ?? null, selected_caption_id: null };
   const saved = replacing
-   ? await admin.rpc("caption_replace_photo", { p_user_id: user.id, p_moment_id: replacing, p_photo_path: path, p_context: inputs.context, p_location: inputs.location, p_style: inputs.style })
+   ? await admin.rpc("caption_replace_photo_location", { p_user_id: user.id, p_moment_id: replacing, p_photo_path: path, p_context: inputs.context, p_location: inputs.location, p_style: inputs.style, p_country_code: selectedLocation?.country_code ?? null })
    : await admin.from("moments").insert(value).select("id").single();
   if (saved.error || !saved.data) {
    const removal = await admin.storage.from("caption-photos").remove([path]);

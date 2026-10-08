@@ -9,7 +9,7 @@ export async function getCommunityVisits(): Promise<VisitCount[]> {
   return await response.json() as VisitCount[];
 }
 export async function getMyVisits(supabase: Awaited<ReturnType<typeof createClient>>, userId: string): Promise<string[]> {
-  const { data, error } = await supabase.from("country_visits").select("country_code").eq("user_id", userId);
+  const { data, error } = await supabase.from("moments").select("country_code").eq("creator_id", userId).eq("status", "published");
   if (error) throw new Error("Your travel list could not be loaded.");
-  return (data ?? []).map(row => row.country_code as string);
+  return [...new Set((data ?? []).map(row => row.country_code as string).filter(Boolean))];
 }

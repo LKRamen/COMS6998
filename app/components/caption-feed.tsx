@@ -5,7 +5,7 @@ import type { FeedPost } from "../../lib/captions";
 import { loadMoreFeed } from "../feed/actions";
 import VoteControl from "./vote-control";
 import CreationControls from "./creation-controls";
-export default function CaptionFeed({ initialPosts, sort, initialOffset, canLoadMore, signedIn }: { initialPosts: FeedPost[]; sort: "new" | "top"; initialOffset: number; canLoadMore: boolean; signedIn: boolean }) {
+export default function CaptionFeed({ initialPosts, sort, initialOffset, canLoadMore, signedIn, country }: { initialPosts: FeedPost[]; sort: "new" | "top"; initialOffset: number; canLoadMore: boolean; signedIn: boolean; country?: string }) {
  const [feed, setFeed] = useState({ source: initialPosts, extraPosts: [] as FeedPost[], loadedPages: 0, hasMore: canLoadMore, refreshing: false });
  const [pending, setPending] = useState(false); const [error, setError] = useState("");
  // A vote can move a card across the first-page boundary. Re-fetch loaded pages
@@ -18,7 +18,8 @@ export default function CaptionFeed({ initialPosts, sort, initialOffset, canLoad
    try {
     const extraPosts: FeedPost[] = []; let loadedPages = 0; let hasMore = canLoadMore;
     for (let page = 1; page <= feed.loadedPages; page++) {
-     const result = await loadMoreFeed(sort, initialOffset + page * 20);
+     const offset = initialOffset + page * 20;
+     const result = country ? await loadMoreFeed(sort, offset, country) : await loadMoreFeed(sort, offset);
      if (cancelled) return;
      if (!result.ok) throw new Error(result.error);
      extraPosts.push(...result.posts); loadedPages = page; hasMore = result.hasMore;
@@ -32,12 +33,13 @@ export default function CaptionFeed({ initialPosts, sort, initialOffset, canLoad
    }
   }
   void reconcile(); return () => { cancelled = true; };
- }, [feed.refreshing, feed.loadedPages, initialPosts, initialOffset, sort, canLoadMore]);
+ }, [feed.refreshing, feed.loadedPages, initialPosts, initialOffset, sort, canLoadMore, country]);
  const initialIds = new Set(initialPosts.map(p => p.id)); const posts = [...initialPosts, ...feed.extraPosts.filter(p => !initialIds.has(p.id))];
  async function more() {
   if (pending || feed.refreshing) return; setPending(true); setError("");
   try {
-   const result = await loadMoreFeed(sort, initialOffset + (feed.loadedPages + 1) * 20);
+   const offset = initialOffset + (feed.loadedPages + 1) * 20;
+   const result = country ? await loadMoreFeed(sort, offset, country) : await loadMoreFeed(sort, offset);
    if (!result.ok) throw new Error(result.error);
    setFeed(current => current.source !== initialPosts ? current : { ...current, extraPosts: [...new Map([...current.extraPosts, ...result.posts].map(p => [p.id, p])).values()], loadedPages: current.loadedPages + 1, hasMore: result.hasMore });
   } catch (error) { setError(error instanceof Error ? error.message : "More captions could not be loaded. Please try again."); }
