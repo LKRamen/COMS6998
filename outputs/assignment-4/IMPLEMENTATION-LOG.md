@@ -37,3 +37,7 @@
 - User explicitly requested deploying the current version to try it after local sign-in redirected to the existing production site. Connector lacked team access; user completed CLI authorization. Confirmed existing team/project before mutation.
 - Deployed a clean archive of commit 7ace6eb to the existing production project; no unrelated untracked files or .env uploaded. Server/Gemini keys added as sensitive production variables. Vercel reports READY, alias coms-6998-theta.vercel.app. Details in DEPLOYMENT.json.
 - Both main and immutable deployment URLs passed cookie-free public requests. Built-in Browser displayed the new feed and the authenticated photo upload page using the user's existing production session. Production generation/publication/voting browser flows and PM feedback remain pending.
+
+## Post-location pivot, 2026-10-08
+
+User authorized location search, location required at publication, post-derived personal/community maps, author location corrections and production deployment. Implemented in 4a2acd0. Live migration applied through the scoped server. 72 unit/component tests, lint, production build/typecheck, isolated and live rollback map/permission checks, and real hosted Auth/Storage upload/replacement checks passed. Independent review found no blockers. User took over interactive QA; stopped further Browser work and task-owned local servers. Production deployment dpl_FZtjEYGsFJRZ6eRgCVpBVozvd4B7 READY; both public URLs pass feed/atlas/filter/place-search and guest-login checks. See LOCATION-PIVOT.md and LOCATION-DEPLOYMENT.json.

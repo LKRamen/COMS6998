@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-08T17:19:41.422Z",
+  "passed": true,
+  "commit": "4a2acd03ac5edd564e72b9453150874f6e7fa45a",
+  "url": "https://coms-6998-theta.vercel.app",
+  "deploymentUrl": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app",
+  "checks": [
+    {
+      "url": "https://coms-6998-theta.vercel.app/",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-theta.vercel.app/atlas",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-theta.vercel.app/?country=840",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-theta.vercel.app/api/locations",
+      "centralParkCountry": "840"
+    },
+    {
+      "url": "https://coms-6998-theta.vercel.app/create",
+      "guestRedirect": 307
+    },
+    {
+      "url": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app/",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app/atlas",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app/?country=840",
+      "status": 200
+    },
+    {
+      "url": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app/api/locations",
+      "centralParkCountry": "840"
+    },
+    {
+      "url": "https://coms-6998-3o8kbf2fi-lkr2124-2742s-projects.vercel.app/create",
+      "guestRedirect": 307
+    }
+  ],
+  "interactiveQa": "User chose to perform the hands-on acceptance check; no browser automation after that request."
+}
