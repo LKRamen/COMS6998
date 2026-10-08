@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-08T17:39:49.311Z",
+  "passed": true,
+  "url": "https://coms-6998-theta.vercel.app",
+  "deploymentUrl": "https://coms-6998-57adwi0yd-lkr2124-2742s-projects.vercel.app",
+  "commit": "2837be3",
+  "desktopColumns": 2,
+  "mobileColumns": 1,
+  "unsplitNaturalHeightCards": true,
+  "fullPhotoFraming": true,
+  "visualAcceptance": "User handles hands-on acceptance; no Browser automation."
+}

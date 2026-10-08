@@ -51,3 +51,5 @@ Full-photo production deployment dpl_HNsehEyiFK7hgtb9BcKHEkPbzJ8G is READY. Main
 ## Masonry post board, 2026-10-08
 
 User requested a Pinterest-style board to remove the whitespace caused by equal-height grid rows. Feed and My creations now use two CSS columns on desktop and one on mobile, with unsplit cards sized to their own photo/caption contents and a 24px gutter. Full-photo aspect ratios are retained. Build/typecheck passed. No JavaScript dependency or new mutation added; visual acceptance remains with the user.
+
+Masonry deployment dpl_5dxF2HNHJUx82L2U45i299iqCBkd is READY and aliased to https://coms-6998-theta.vercel.app. Source commit2837be3. Live stylesheet checks verify desktop two-column/mobile single-column board, unsplit cards, and full-photo height:auto. No Browser automation or temporary service was started. Immutable URL https://coms-6998-57adwi0yd-lkr2124-2742s-projects.vercel.app.
