@@ -1,33 +1,27 @@
+/* eslint-disable @next/next/no-img-element -- Short-lived signed images must not enter an image optimization cache. */
 import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
-import { getCommunityVisits, type VisitCount } from "../lib/travel";
-import { countries } from "../lib/countries";
-import WorldMap from "./components/world-map";
+import { getFeed, type FeedPost } from "../lib/captions";
 import TravelNav from "./components/travel-nav";
-
+import VoteControl from "./components/vote-control";
+import CreationControls from "./components/creation-controls";
 export const dynamic = "force-dynamic";
-export default async function Home() {
-  let counts: VisitCount[] = [];
-  let failed = false;
-  let signedIn = false;
-  try {
-    const supabase = await createClient();
-    const [visits, session] = await Promise.all([getCommunityVisits(), supabase.auth.getUser()]);
-    counts = visits; signedIn = Boolean(session.data.user);
-  } catch { failed = true; }
-  const total = counts.reduce((sum,row) => sum + Number(row.visitor_count), 0);
-  const ranked = counts.map(row => ({ ...row, name: countries.find(country => country.code === row.country_code)?.name ?? row.country_code }))
-    .sort((a,b) => Number(b.visitor_count) - Number(a.visitor_count) || a.name.localeCompare(b.name));
-  return <main className="travel-page"><div className="travel-frame">
-    <TravelNav signedIn={signedIn} current="community"/>
-    <header className="travel-heading"><div><p className="eyebrow">A SHARED ATLAS OF PLACES WE’VE BEEN</p><h1>A world of places.<br/><span>One shared map.</span></h1><p className="page-intro">From a first trip to a familiar favorite. See where our community has been, and start mapping your own story.</p></div>
-      <div className="travel-stat"><strong>{failed ? "—" : counts.length.toString().padStart(2,"0")}</strong><span>countries &amp; territories explored</span><small>{failed ? "Counts temporarily unavailable" : `${total} personal ${total === 1 ? "visit" : "visits"} recorded`}</small></div>
-    </header>
-    {failed ? <div className="notice" role="alert"><h2>The community map is taking a moment.</h2><p>We couldn’t load visit counts. Please refresh to try again.</p></div> : <><WorldMap counts={counts}/>
-      <div className="community-bottom"><section className="community-list"><div className="ledger-heading"><h2>Places on our map</h2><span>{counts.length} explored</span></div>
-        {ranked.length ? <ul>{ranked.map(country => <li key={country.country_code}><span>{country.name}</span><span>{country.visitor_count} {Number(country.visitor_count) === 1 ? "traveler" : "travelers"}</span></li>)}</ul> : <p>No trips recorded yet. Be the first to put a country on the map.</p>}
-      </section><aside className="map-invitation"><p className="eyebrow">MAKE IT YOURS</p><h2>Your travels belong<br/>on the map.</h2><p>Keep a personal list of the countries you’ve visited. Every new entry adds to our shared picture of the world.</p><Link className="button" href={signedIn ? "/members" : "/login"}>{signedIn ? "Open my travels" : "Sign in with Google"} <span aria-hidden="true">↗</span></Link></aside></div>
-    </>}
-    <footer className="travel-footer"><span>More travelers. Deeper color. Every country counts once per person.</span><a href="https://www.naturalearthdata.com/about/terms-of-use/" target="_blank" rel="noreferrer">Map data: Natural Earth</a><span>Countries &amp; territories · illustrative boundaries</span></footer>
-  </div></main>;
+export default async function Home({ searchParams }: { searchParams?: Promise<{ sort?: string; page?: string }> }) {
+ const params = await searchParams ?? {}; const sort = params.sort === "top" ? "top" : "new";
+ const page = Math.max(1, Math.min(500, Math.floor(Number(params.page)) || 1));
+ let signedIn = false; let failed = false; let posts: FeedPost[] = [];
+ try { const client = await createClient(); const { data: { user } } = await client.auth.getUser(); signedIn = Boolean(user); posts = await getFeed(sort, (page - 1) * 20, client, user?.id); }
+ catch { failed = true; }
+ return <main className="travel-page"><div className="travel-frame"><TravelNav signedIn={signedIn} current="feed"/>
+  <header className="caption-heading"><div><p className="eyebrow">PLACES, PEOPLE & A FEW GOOD WORDS</p><h1>Every trip has<br/><span>a caption.</span></h1><p className="page-intro">Big journeys. Small discoveries. Share a travel photo, let AI find the words, and see which moments land.</p></div><Link className="button" href={signedIn ? "/create" : "/login"}>Create captions <span aria-hidden="true">↗</span></Link></header>
+  <div className="feed-toolbar"><div className="feed-tabs" aria-label="Feed sorting"><Link href="/" aria-current={sort === "new" ? "page" : undefined}>New</Link><Link href="/?sort=top" aria-current={sort === "top" ? "page" : undefined}>Top this week</Link></div><p>One photo. One AI caption. Your call.</p></div>
+  {failed ? <section className="notice" role="alert"><h2>The feed is taking a moment.</h2><p>We couldn’t load captions. Please refresh to try again.</p></section> : posts.length === 0 ? <section className="feed-empty"><p className="eyebrow">A NEW CHAPTER</p><h2>{page > 1 ? "You’re all caught up." : sort === "top" ? "This week’s stories start here." : "A moment worth sharing?"}</h2><p>{page > 1 ? "Return to the newest moments." : "Bring a photo from somewhere you’ve been. We’ll help you find its caption."}</p><Link className="button" href={page > 1 ? "/" : signedIn ? "/create" : "/login"}>{page > 1 ? "Back to the feed" : "Create the first post"}</Link></section> : <section className="caption-grid" aria-label="Travel captions">{posts.map(post => <article className="caption-card" key={post.id}>
+   {post.photo_url ? <img className="caption-image" src={post.photo_url} alt={post.location ? `Travel moment from ${post.location}` : "A shared travel moment"} loading="lazy"/> : <div className="image-missing">Photo unavailable. Refresh to renew access.</div>}
+   <div className="caption-card-body"><div className="caption-meta"><span>{post.location || "Somewhere worth remembering"}</span><span>{post.style}</span></div><p className="caption-text">{post.text}</p><p className="caption-byline">By {post.author_name} · {new Date(post.published_at).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" })}</p>
+    <VoteControl key={`${post.caption_id}:${post.score}:${post.vote}`} captionId={post.caption_id} score={post.score} vote={post.vote} signedIn={signedIn} own={post.own}/>{post.own && <CreationControls id={post.id}/>}</div>
+  </article>)}</section>}
+  {!failed && posts.length === 20 && <div className="feed-pagination"><Link className="button" href={`/?sort=${sort}&page=${page + 1}`}>Load more</Link></div>}
+  {page > 1 && <p><Link href={`/?sort=${sort}&page=${page - 1}`}>← Previous page</Link></p>}
+  <footer className="travel-footer"><span>AI-generated captions. Human opinions.</span><Link href="/atlas">Explore the travel atlas ↗</Link><span>Rate the caption, not the traveler.</span></footer>
+ </div></main>;
 }

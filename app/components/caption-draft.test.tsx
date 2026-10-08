@@ -1,0 +1,44 @@
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import type { Moment } from "../../lib/captions";
+const { save } = vi.hoisted(() => ({ save: vi.fn() }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }) }));
+vi.mock("../creations/actions", () => ({ saveDraft: save, generateBatch: vi.fn(), publishCaption: vi.fn() }));
+vi.mock("./creation-controls", () => ({ default: () => null }));
+vi.mock("./photo-upload", () => ({ default: () => null }));
+import CaptionDraft from "./caption-draft";
+const moment: Moment = { id: "draft", context: "", location: "", style: "Funny", photo_path: "owner/photo", photo_revision: "revision", photo_url: "", status: "draft", selected_caption_id: null, created_at: "", published_at: null, captions: [], runs: [] };
+beforeEach(() => { vi.useFakeTimers(); save.mockReset(); });
+afterEach(() => { cleanup(); vi.useRealTimers(); });
+it("saves the newest edit after an earlier automatic save finishes slowly", async () => {
+ let finish!: (value: { ok: true }) => void;
+ save.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; })).mockResolvedValue({ ok: true });
+ render(<CaptionDraft moment={moment} allowance={{ remaining: 5, reset_at: "2026-10-09T04:00:00Z" }} firstName="Sam"/>);
+ fireEvent.change(screen.getByLabelText(/Where was this/), { target: { value: "Paris" } });
+ await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+ expect(save).toHaveBeenCalledTimes(1);
+ fireEvent.change(screen.getByLabelText(/Where was this/), { target: { value: "New York" } });
+ await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+ expect(save).toHaveBeenCalledTimes(1);
+ await act(async () => { finish({ ok: true }); });
+ await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+ expect(save).toHaveBeenCalledTimes(2);
+ expect(save.mock.calls[1][1]).toMatchObject({ location: "New York" });
+});
+it("persists reverting an edit while the earlier automatic save is still running", async () => {
+ let finish!: (value: { ok: true }) => void;
+ save.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; })).mockResolvedValue({ ok: true });
+ render(<CaptionDraft moment={moment} allowance={{ remaining: 5, reset_at: "2026-10-09T04:00:00Z" }} firstName="Sam"/>);
+ fireEvent.change(screen.getByLabelText(/Where was this/), { target: { value: "Paris" } });
+ await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+ fireEvent.change(screen.getByLabelText(/Where was this/), { target: { value: "" } });
+ await act(async () => { finish({ ok: true }); });
+ await act(async () => { await vi.advanceTimersByTimeAsync(1000); });
+ expect(save).toHaveBeenCalledTimes(2);
+ expect(save.mock.calls[1][1]).toMatchObject({ location: "" });
+});
+it("does not offer publication of a caption generated for a replaced photo", () => {
+ render(<CaptionDraft moment={{ ...moment, selected_caption_id: "caption", captions: [{ id: "caption", text: "Old photo caption", ordinal: 1, generation_run_id: "run", moment_id: "draft" }], runs: [{ id: "run", context: "", location: "Paris", style: "Funny", photo_revision: "old-revision", system_prompt: "prompt", user_prompt: "prompt", model: "model", created_at: "" }] }} allowance={{ remaining: 5, reset_at: "2026-10-09T04:00:00Z" }} firstName="Sam"/>);
+ expect(screen.queryByRole("button", { name: "Publish selected caption" })).not.toBeInTheDocument();
+ expect(screen.getByRole("button", { name: /Old photo caption/ })).toBeDisabled();
+});

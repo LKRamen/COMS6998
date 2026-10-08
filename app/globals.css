@@ -8,6 +8,69 @@
   --line: #e1e7e2;
 }
 
+/* Caption community shares the atlas palette and typography. */
+.caption-heading { display:flex; justify-content:space-between; align-items:flex-end; gap:28px; padding:40px 0 44px; }
+.caption-heading h1 { margin:0; font-size:clamp(44px,6vw,76px); line-height:1.02; letter-spacing:-.055em; font-weight:500; }
+.caption-heading h1 span { color:var(--accent); }
+.caption-heading .page-intro { max-width:570px; }
+.caption-heading > .button { white-space:nowrap; flex-shrink:0; }
+.feed-toolbar { display:flex; justify-content:space-between; align-items:center; gap:20px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:18px 0; margin-bottom:28px; }
+.feed-toolbar p,.muted,.privacy-note { color:var(--muted); font-size:13px; line-height:1.6; }
+.feed-tabs { display:flex; gap:22px; }
+.feed-tabs a { text-decoration:none; font-size:14px; padding:8px 0; }
+.feed-tabs a[aria-current=page] { color:var(--accent); font-weight:700; border-bottom:2px solid var(--accent); }
+.caption-grid,.creation-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
+.caption-card,.creation-card { background:var(--surface); border:1px solid var(--line); overflow:hidden; border-radius:12px; }
+.caption-image,.creation-card > img { width:100%; height:330px; object-fit:cover; display:block; }
+.caption-card-body,.creation-card > div { padding:24px; }
+.caption-meta { display:flex; justify-content:space-between; gap:14px; font-size:12px; color:var(--muted); }
+.caption-meta span:first-child { overflow-wrap:anywhere; }
+.caption-meta span:last-child { flex-shrink:0; }
+.caption-text { font-size:24px; line-height:1.35; letter-spacing:-.03em; margin:22px 0; overflow-wrap:anywhere; }
+.caption-byline { font-size:12px; color:var(--muted); }
+.caption-votes { display:flex; align-items:center; gap:14px; border-top:1px solid var(--line); padding-top:18px; }
+.caption-votes button { width:42px; height:42px; border:1px solid var(--line); background:var(--page); border-radius:50%; font-size:22px; color:var(--ink); cursor:pointer; }
+.caption-votes button[aria-pressed=true] { background:var(--accent); color:#fff; }
+.caption-votes button:disabled { opacity:.5; cursor:wait; }
+.caption-score { font-weight:700; min-width:20px; text-align:center; }
+.caption-votes a { font-size:12px; text-underline-offset:4px; }
+.image-missing { min-height:240px; display:grid; place-items:center; padding:24px; background:var(--line); color:var(--muted); }
+.feed-empty { padding:64px 28px; border:1px dashed #b9c8bf; text-align:center; margin:32px 0; }
+.feed-empty h2 { font-size:32px; font-weight:500; letter-spacing:-.03em; }
+.feed-empty p { color:var(--muted); line-height:1.6; }
+.feed-pagination { display:flex; justify-content:center; margin:32px 0; }
+.upload-card { max-width:680px; border:1px solid var(--line); background:var(--surface); border-radius:12px; padding:32px; }
+.profile-form textarea,.profile-form select { width:100%; min-width:0; border:1px solid var(--line); border-radius:8px; padding:12px; background:var(--page); color:var(--ink); font:inherit; }
+textarea:focus-visible,select:focus-visible,summary:focus-visible { outline:2px solid var(--accent); outline-offset:4px; }
+.draft-layout { display:grid; grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap:44px; }
+.draft-photo > img { width:100%; display:block; border-radius:10px; }
+.draft-editor .profile-form { margin-top:0; }
+.draft-actions { display:flex; gap:20px; justify-content:space-between; align-items:center; margin-top:24px; flex-wrap:wrap; }
+.caption-batch { margin-top:30px; border-top:1px solid var(--line); padding-top:20px; }
+.caption-batch h2 { font-size:18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.caption-batch h2 span { font-size:12px; font-weight:400; color:var(--muted); }
+.caption-choice { width:100%; display:flex; flex-direction:column; gap:16px; text-align:left; padding:20px; font:inherit; line-height:1.5; background:var(--surface); border:1px solid var(--line); border-radius:8px; margin:12px 0; color:var(--ink); cursor:pointer; overflow-wrap:anywhere; }
+.caption-choice span { font-size:12px; color:var(--accent); }
+.caption-choice[aria-pressed=true] { border:2px solid var(--accent); background:#ecf3ef; }
+.caption-choice:disabled { opacity:.6; cursor:not-allowed; }
+.publication-preview { margin-top:30px; padding:24px; background:var(--surface); border:1px solid var(--accent); border-radius:10px; }
+.preview-caption { font-size:26px; line-height:1.4; overflow-wrap:anywhere; }
+details { margin-top:20px; font-size:13px; }
+summary { cursor:pointer; color:var(--accent); padding:10px 0; }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:12px; line-height:1.6; }
+.creation-controls { margin-top:18px; font-size:13px; line-height:1.6; }
+.creation-controls button { min-height:36px; }
+.creation-card h2 { font-size:22px; overflow-wrap:anywhere; }
+@media(max-width:700px) {
+ .caption-heading { align-items:flex-start; flex-direction:column; padding:30px 0; gap:22px; }
+ .feed-toolbar { align-items:flex-start; flex-direction:column; gap:4px; }
+ .caption-grid,.creation-grid,.draft-layout { grid-template-columns:minmax(0,1fr); gap:24px; }
+ .caption-image,.creation-card > img { height:280px; }
+ .caption-card-body,.upload-card { padding:22px; }
+ .caption-text { font-size:23px; }
+ .travel-nav-links { flex-wrap:wrap; }
+}
+
 .site-nav, .site-nav > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
 .site-nav { padding-bottom: 26px; font-size: 14px; }
 .site-nav a, .account-links a, .account-link a { color: var(--accent); text-underline-offset: 4px; }

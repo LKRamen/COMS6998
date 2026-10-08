@@ -12,6 +12,7 @@ export async function addVisit(form: FormData) {
   const { error } = await supabase.from("country_visits").insert({ user_id: user.id, country_code: code });
   if (error && error.code !== "23505") redirect("/members?error=save");
   revalidatePath("/");
+  revalidatePath("/atlas");
   revalidatePath("/members");
   redirect("/members?saved=1");
 }
@@ -23,6 +24,7 @@ export async function removeVisit(form: FormData) {
   const { error } = await supabase.from("country_visits").delete().eq("user_id", user.id).eq("country_code", code);
   if (error) redirect("/members?error=save");
   revalidatePath("/");
+  revalidatePath("/atlas");
   revalidatePath("/members");
   redirect("/members?removed=1");
 }

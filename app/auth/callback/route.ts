@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         } catch {
           // Profile page provides a retryable error if setup is incomplete.
         }
-        const response = NextResponse.redirect(new URL(complete ? "/members" : "/profile", request.url));
+        const response = NextResponse.redirect(new URL(complete ? "/" : "/profile", request.url));
         response.headers.set("Cache-Control", "private, no-store");
         return response;
       }

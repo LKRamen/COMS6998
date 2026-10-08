@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Been there · A shared travel atlas",
+  title: "Been there · Every trip has a caption",
   description:
-    "Map the countries you have visited and explore the places our community has been.",
+    "Share travel photos, generate AI captions, and rate the moments that land. Explore our shared travel atlas.",
 };
 
 export default function RootLayout({
