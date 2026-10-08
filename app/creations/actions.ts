@@ -33,8 +33,10 @@ export async function generateBatch(id: string, requestKey: string): Promise<Res
   idCheck(id, requestKey); const { model } = geminiConfig(); admin = createAdminClient();
   const moment = await getMoment(supabase, id);
   if (!moment || moment.status !== "draft") throw new Error("Draft is unavailable.");
-  const inputs = parseInputs(moment); const prompts = buildPrompts(inputs, moment.captions.map(c => c.text), moment.photo_revision);
-  const { data: reservation, error } = await admin.rpc("caption_reserve", { p_user_id: user.id, p_moment_id: id, p_request_key: requestKey, p_system_prompt: prompts.system, p_user_prompt: prompts.user, p_model: model, p_settings: generationSettings });
+  const inputs = parseInputs(moment);
+  const previous = moment.runs.filter(run => run.photo_revision === moment.photo_revision).slice(0, 5).reverse().flatMap(run => moment.captions.filter(c => c.generation_run_id === run.id).map(c => c.text));
+  const prompts = buildPrompts(inputs, previous, moment.photo_revision);
+  const { data: reservation, error } = await admin.rpc("caption_reserve", { p_user_id: user.id, p_moment_id: id, p_request_key: requestKey, p_system_prompt: prompts.system, p_user_prompt: prompts.user, p_model: model, p_settings: generationSettings(model) });
   if (error) throw new Error(error.message);
   if (reservation.reused) {
    if (reservation.state === "succeeded") { refresh(id); return { ok: true, message: "Your captions are already saved." }; }

@@ -15,10 +15,11 @@ create table public.moments (
 );
 create table public.generation_runs (
  id uuid primary key default gen_random_uuid(), moment_id uuid not null references public.moments(id) on delete cascade,
- creator_id uuid not null references public.profiles(id) on delete cascade, photo_revision uuid not null,
+ creator_id uuid not null references public.profiles(id) on delete cascade, photo_revision uuid not null, photo_path text not null, request_key uuid not null,
  context text not null, location text not null, style text not null,
  system_prompt text not null, user_prompt text not null, provider text not null default 'gemini', model text not null,
- prompt_version text not null default 'travel-v1', settings jsonb not null, created_at timestamptz not null default now()
+ prompt_version text not null default 'travel-v1', settings jsonb not null, created_at timestamptz not null default now(),
+ unique(creator_id,request_key), check(split_part(photo_path,'/',1)=creator_id::text)
 );
 create table public.captions (
  id uuid primary key default gen_random_uuid(), generation_run_id uuid not null references public.generation_runs(id) on delete cascade,
@@ -36,7 +37,7 @@ create table public.generation_requests (
  id uuid primary key default gen_random_uuid(), creator_id uuid not null references public.profiles(id) on delete cascade,
  moment_id uuid references public.moments(id) on delete set null, request_key uuid not null,
  quota_date date not null, state text not null check(state in ('pending','succeeded','failed','expired')),
- lease_expires_at timestamptz not null, photo_revision uuid not null, context text not null, location text not null, style text not null,
+ lease_expires_at timestamptz not null, photo_revision uuid not null, photo_path text not null, context text not null, location text not null, style text not null,
  system_prompt text not null, user_prompt text not null, model text not null, settings jsonb not null,
  run_id uuid references public.generation_runs(id) on delete set null, created_at timestamptz not null default now(),
  unique(creator_id,request_key)
@@ -185,8 +186,8 @@ begin
  if not found then raise exception 'Draft is unavailable.'; end if;
  -- Prompts must describe the exact saved input snapshot, even if another tab saved it.
  if (p_user_prompt::jsonb->>'context') is distinct from m.context or (p_user_prompt::jsonb->>'location') is distinct from m.location or (p_user_prompt::jsonb->>'style') is distinct from m.style or (p_user_prompt::jsonb->>'photoRevision') is distinct from m.photo_revision::text then raise exception 'Draft changed. Save and try again.'; end if;
- insert into public.generation_requests(creator_id,moment_id,request_key,quota_date,state,lease_expires_at,photo_revision,context,location,style,system_prompt,user_prompt,model,settings)
- values(p_user_id,m.id,p_request_key,d,'pending',now()+interval '2 minutes',m.photo_revision,m.context,m.location,m.style,p_system_prompt,p_user_prompt,p_model,p_settings) returning * into r;
+ insert into public.generation_requests(creator_id,moment_id,request_key,quota_date,state,lease_expires_at,photo_revision,photo_path,context,location,style,system_prompt,user_prompt,model,settings)
+ values(p_user_id,m.id,p_request_key,d,'pending',now()+interval '2 minutes',m.photo_revision,m.photo_path,m.context,m.location,m.style,p_system_prompt,p_user_prompt,p_model,p_settings) returning * into r;
  return jsonb_build_object('id',r.id,'state',r.state,'reused',false,'photo_revision',r.photo_revision);
 end $$;
 
@@ -203,8 +204,8 @@ begin
  if jsonb_typeof(p_captions)<>'array' or jsonb_array_length(p_captions)<>3 then raise exception 'Expected three captions.'; end if;
  if exists(select 1 from jsonb_array_elements(p_captions) x where jsonb_typeof(x)<>'string' or char_length(btrim(x#>>'{}')) not between 1 and 240)
  or (select count(distinct lower(btrim(x#>>'{}'))) from jsonb_array_elements(p_captions) x)<>3 then raise exception 'Invalid or duplicate captions.'; end if;
- insert into public.generation_runs(moment_id,creator_id,photo_revision,context,location,style,system_prompt,user_prompt,model,settings)
- values(m.id,p_user_id,r.photo_revision,r.context,r.location,r.style,r.system_prompt,r.user_prompt,r.model,r.settings) returning id into run;
+ insert into public.generation_runs(moment_id,creator_id,photo_revision,photo_path,request_key,context,location,style,system_prompt,user_prompt,model,settings)
+ values(m.id,p_user_id,r.photo_revision,r.photo_path,r.request_key,r.context,r.location,r.style,r.system_prompt,r.user_prompt,r.model,r.settings) returning id into run;
  insert into public.captions(generation_run_id,moment_id,creator_id,ordinal,text)
  select run,m.id,p_user_id,n::smallint,btrim(x#>>'{}') from jsonb_array_elements(p_captions) with ordinality as e(x,n);
  update public.generation_requests set state='succeeded',run_id=run where id=r.id;

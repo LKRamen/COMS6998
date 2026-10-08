@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-08T05:31:27.806Z",
+  "model": "gemini-3.8-flash",
+  "settings": {
+    "temperature": 0.9,
+    "maxOutputTokens": 4096,
+    "responseMimeType": "application/json",
+    "thinkingConfig": {
+      "thinkingLevel": "low"
+    }
+  },
+  "captionCount": 3,
+  "validLengths": true,
+  "elapsedMs": 16769,
+  "source": "Actual application provider module; synthetic image; not a saved database batch"
+}

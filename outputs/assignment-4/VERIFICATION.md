@@ -4,20 +4,19 @@ Checked 2026-10-08 on local branch `codex/ai-travel-captions`.
 
 ## Verified locally
 
-- 51 tests across 15 files passed using bundled Node 24.19 and Vitest threads. Coverage includes input/candidate validation, real image normalization, authentication boundaries, cross-origin upload denial, vote change/removal/failure recovery, private draft autosave with overlapping edits and reversions, old-photo publication prevention, provider rejection, reservation replay/failure cleanup, and existing auth/profile/travel behavior.
-- Production Next.js build passed, including its TypeScript check. The generated routes include `/`, `/atlas`, `/create`, `/creations`, `/creations/[id]` and the photo upload endpoint.
-- ESLint passed without warnings or errors; tracked changes passed whitespace checking.
-- SQL migration and rollback assertions passed in isolated PGlite with stubbed Auth/Storage. Assertions cover role grants/RLS, private drafts/prompts, published public projection, vote insertion/change/removal, duplicate requests, quota, publication and deletion/cleanup persistence.
-- Built-in browser inspection confirmed the public feed's missing-schema error state at desktop and mobile sizes; mobile had no horizontal page overflow. Navigation to `/atlas` loaded the existing real community map and counts. Private creation flows were verified with component/action tests, not live browser transactions.
-- Independent review identified concurrent photo replacement cleanup and reverting input during an in-flight autosave. Both were fixed; the reviewer verified the final autosave correction with no further important findings.
-- Temporary local QA server was stopped after inspection; port 3100 no longer had a listener.
+- 60 tests across 17 files passed using bundled Node 24.19 and Vitest threads. Coverage includes image/input validation, authentication, upload boundaries, vote change/removal/failure recovery, private draft autosave, old-photo prevention, current-photo regeneration history, provider rejection, request replay, feed append/deduplication and ranking refresh, and existing auth/profile/travel behavior.
+- Production Next.js build passed, including TypeScript. ESLint passed without warnings or errors.
+- Migration and rollback assertions passed in isolated PGlite with stubbed Auth/Storage. Coverage includes grants/RLS, private prompts/history, public projection, desired-state votes, quota, immutable publication, deletion/cleanup persistence, stale/expired generation and exact photo/request provenance. This uses one connection and does not establish hosted concurrency behavior.
+- The actual application Gemini provider returned three distinct valid captions from a synthetic image in 16.8 seconds. `GEMINI-SMOKE.json` records non-secret metadata. Earlier requests timed out. Account billing/quota and a saved hosted batch remain unverified.
+- Built-in browser inspection confirmed the public feed's honest missing-schema state at desktop/mobile sizes and the existing real `/atlas` community map. An isolated, visibly labelled fixture harness then exercised actual draft, vote and feed components: caption selection/preview, publication failure recovery, immediate net score, append without losing earlier cards, and mobile layout without horizontal overflow. Those fixture actions were stubs, not real database transactions.
+- Independent review caught cleanup/autosave edge cases and a ranking boundary gap after score changes. Fixes and regression tests were reviewed; no remaining important findings were reported in the final reviewed changes.
+- Task-owned temporary QA servers were stopped, with ports 3100 and 3101 verified closed at their respective completion checks.
 
 ## Still required
 
-- Authenticate and load `supabase-coms6998`, inspect the real schema and policies, apply the prepared migration, and audit RLS on all existing exposed tables.
-- Add the application's private Supabase service key. MCP OAuth does not provide that environment value.
-- Obtain a successful real Gemini caption-generation response. Key authentication/model discovery succeeded; the synthetic-image request timed out. Free-tier generation limits have not been established by that check.
-- Run actual two-user/guest flows, Storage tests and simultaneous transactions against the scoped project. Isolated SQL assertions do not reproduce hosted Auth, Storage HTTP behavior or separate-connection races.
-- Test the complete draft/publication screens visually with real data, complete PM feedback iterations, deploy to Vercel and verify the commit-specific URL in incognito with deployment protection disabled.
+- Fully restart Codex so the configured Windows User token reaches `supabase-coms6998`. Verify token acceptance, inspect the real schema, apply the migration and audit RLS on every existing exposed table.
+- Add `SUPABASE_SERVICE_ROLE_KEY` privately to the app's ignored `.env`. MCP credentials do not supply this application value.
+- Run actual two-user/guest flows, private Storage HTTP checks and simultaneous transactions against the scoped project. Adapt synthetic Auth fixtures before any hosted SQL check.
+- Inspect complete screens with live data, obtain PM feedback and iterate, then deploy and verify the commit-specific Vercel URL in incognito with deployment protection disabled.
 
-No live caption migration, push or deployment has been performed. This verification does not establish a completed assignment submission.
+No live caption migration, push or deployment has been performed. Local verification does not establish a completed assignment submission. See `SETUP.md` for restart and integration steps.

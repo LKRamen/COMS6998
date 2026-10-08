@@ -12,9 +12,12 @@ try {
  create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
  create table storage.objects(id uuid primary key,name text,bucket_id text);
  alter table storage.objects enable row level security;
+ grant usage on schema storage to anon,authenticated;
+ grant select on storage.objects to anon,authenticated;
  insert into public.profiles values('00000000-0000-4000-8000-000000000001','Test','Owner'),('00000000-0000-4000-8000-000000000002','Test','Voter');`);
  await db.exec(await readFile("supabase/migrations/202610080001_caption_community.sql", "utf8"));
  await db.exec(await readFile("outputs/assignment-4/database-verification.sql", "utf8"));
+ await db.exec(await readFile("outputs/assignment-4/database-regressions.sql", "utf8"));
  console.log("Database migration and rollback authorization/quota/voting assertions passed in isolated PGlite.");
 } catch (error) { console.error("Database assertion failed:", error.message); process.exitCode = 1; }
 finally { await db.close(); }

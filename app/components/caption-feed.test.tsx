@@ -1,0 +1,54 @@
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, expect, it, vi } from "vitest";
+import type { FeedPost } from "../../lib/captions";
+const { load } = vi.hoisted(() => ({ load: vi.fn() }));
+vi.mock("../feed/actions", () => ({ loadMoreFeed: load }));
+vi.mock("./vote-control", () => ({ default: () => null }));
+vi.mock("./creation-controls", () => ({ default: () => null }));
+import CaptionFeed from "./caption-feed";
+const post = (id: string): FeedPost => ({ id, caption_id: id, text: `Caption ${id}`, photo_path: "", photo_url: "", location: "", style: "Funny", author_name: "Sam", published_at: "2026-10-08T00:00:00Z", score: 0, vote: null, own: false });
+afterEach(() => { cleanup(); vi.resetAllMocks(); });
+it("appends the next batch while keeping existing cards and removes duplicate posts", async () => {
+ load.mockResolvedValue({ ok: true, posts: [post("first"), post("next")], hasMore: false });
+ render(<CaptionFeed initialPosts={[post("first")]} sort="new" initialOffset={0} canLoadMore signedIn={false}/>);
+ fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+ await waitFor(() => expect(screen.getByText("Caption next")).toBeInTheDocument());
+ expect(screen.getAllByText("Caption first")).toHaveLength(1);
+ expect(load).toHaveBeenCalledWith("new",20);
+ expect(screen.queryByRole("button", { name: "Load more" })).not.toBeInTheDocument();
+});
+it("keeps the current cards and permits retry after loading fails", async () => {
+ load.mockResolvedValue({ ok: false, error: "Please try again." });
+ render(<CaptionFeed initialPosts={[post("first")]} sort="top" initialOffset={20} canLoadMore signedIn={false}/>);
+ fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+ await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Please try again."));
+ expect(screen.getByText("Caption first")).toBeInTheDocument();
+ expect(screen.getByRole("button", { name: "Load more" })).toBeEnabled();
+ expect(load).toHaveBeenCalledWith("top",40);
+});
+it("refetches appended pages when voting moves a post across the first-page boundary", async () => {
+ load.mockResolvedValueOnce({ ok: true, posts: [post("promoted"), post("older")], hasMore: true });
+ const view = render(<CaptionFeed initialPosts={[post("first"),post("displaced")]} sort="top" initialOffset={0} canLoadMore signedIn={false}/>);
+ fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+ await waitFor(() => expect(screen.getByText("Caption promoted")).toBeInTheDocument());
+ load.mockResolvedValueOnce({ ok: true, posts: [post("displaced"),post("older")], hasMore: true });
+ view.rerender(<CaptionFeed initialPosts={[post("first"),post("promoted")]} sort="top" initialOffset={0} canLoadMore signedIn={false}/>);
+ await waitFor(() => expect(load).toHaveBeenCalledTimes(2));
+ await waitFor(() => expect(screen.getByText("Caption displaced")).toBeInTheDocument());
+ expect(screen.getAllByText("Caption promoted")).toHaveLength(1);
+ expect(load).toHaveBeenLastCalledWith("top",20);
+});
+it("rewinds pagination after a refresh failure so retry cannot skip the displaced page", async () => {
+ load.mockResolvedValueOnce({ ok: true, posts: [post("older")], hasMore: true });
+ const view = render(<CaptionFeed initialPosts={[post("first")]} sort="top" initialOffset={0} canLoadMore signedIn={false}/>);
+ fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+ await waitFor(() => expect(screen.getByText("Caption older")).toBeInTheDocument());
+ load.mockResolvedValueOnce({ ok: false, error: "Unavailable" });
+ view.rerender(<CaptionFeed initialPosts={[post("updated")]} sort="top" initialOffset={0} canLoadMore signedIn={false}/>);
+ await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("older captions could not be refreshed"));
+ expect(screen.getByText("Caption updated")).toBeInTheDocument();
+ load.mockResolvedValueOnce({ ok: true, posts: [post("older")], hasMore: false });
+ fireEvent.click(screen.getByRole("button", { name: "Load more" }));
+ await waitFor(() => expect(load).toHaveBeenCalledTimes(3));
+ expect(load).toHaveBeenLastCalledWith("top",20);
+});

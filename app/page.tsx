@@ -1,10 +1,8 @@
-/* eslint-disable @next/next/no-img-element -- Short-lived signed images must not enter an image optimization cache. */
 import Link from "next/link";
 import { createClient } from "../lib/supabase/server";
 import { getFeed, type FeedPost } from "../lib/captions";
 import TravelNav from "./components/travel-nav";
-import VoteControl from "./components/vote-control";
-import CreationControls from "./components/creation-controls";
+import CaptionFeed from "./components/caption-feed";
 export const dynamic = "force-dynamic";
 export default async function Home({ searchParams }: { searchParams?: Promise<{ sort?: string; page?: string }> }) {
  const params = await searchParams ?? {}; const sort = params.sort === "top" ? "top" : "new";
@@ -15,12 +13,7 @@ export default async function Home({ searchParams }: { searchParams?: Promise<{ 
  return <main className="travel-page"><div className="travel-frame"><TravelNav signedIn={signedIn} current="feed"/>
   <header className="caption-heading"><div><p className="eyebrow">PLACES, PEOPLE & A FEW GOOD WORDS</p><h1>Every trip has<br/><span>a caption.</span></h1><p className="page-intro">Big journeys. Small discoveries. Share a travel photo, let AI find the words, and see which moments land.</p></div><Link className="button" href={signedIn ? "/create" : "/login"}>Create captions <span aria-hidden="true">↗</span></Link></header>
   <div className="feed-toolbar"><div className="feed-tabs" aria-label="Feed sorting"><Link href="/" aria-current={sort === "new" ? "page" : undefined}>New</Link><Link href="/?sort=top" aria-current={sort === "top" ? "page" : undefined}>Top this week</Link></div><p>One photo. One AI caption. Your call.</p></div>
-  {failed ? <section className="notice" role="alert"><h2>The feed is taking a moment.</h2><p>We couldn’t load captions. Please refresh to try again.</p></section> : posts.length === 0 ? <section className="feed-empty"><p className="eyebrow">A NEW CHAPTER</p><h2>{page > 1 ? "You’re all caught up." : sort === "top" ? "This week’s stories start here." : "A moment worth sharing?"}</h2><p>{page > 1 ? "Return to the newest moments." : "Bring a photo from somewhere you’ve been. We’ll help you find its caption."}</p><Link className="button" href={page > 1 ? "/" : signedIn ? "/create" : "/login"}>{page > 1 ? "Back to the feed" : "Create the first post"}</Link></section> : <section className="caption-grid" aria-label="Travel captions">{posts.map(post => <article className="caption-card" key={post.id}>
-   {post.photo_url ? <img className="caption-image" src={post.photo_url} alt={post.location ? `Travel moment from ${post.location}` : "A shared travel moment"} loading="lazy"/> : <div className="image-missing">Photo unavailable. Refresh to renew access.</div>}
-   <div className="caption-card-body"><div className="caption-meta"><span>{post.location || "Somewhere worth remembering"}</span><span>{post.style}</span></div><p className="caption-text">{post.text}</p><p className="caption-byline">By {post.author_name} · {new Date(post.published_at).toLocaleDateString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric" })}</p>
-    <VoteControl key={`${post.caption_id}:${post.score}:${post.vote}`} captionId={post.caption_id} score={post.score} vote={post.vote} signedIn={signedIn} own={post.own}/>{post.own && <CreationControls id={post.id}/>}</div>
-  </article>)}</section>}
-  {!failed && posts.length === 20 && <div className="feed-pagination"><Link className="button" href={`/?sort=${sort}&page=${page + 1}`}>Load more</Link></div>}
+  {failed ? <section className="notice" role="alert"><h2>The feed is taking a moment.</h2><p>We couldn’t load captions. Please refresh to try again.</p></section> : posts.length === 0 ? <section className="feed-empty"><p className="eyebrow">A NEW CHAPTER</p><h2>{page > 1 ? "You’re all caught up." : sort === "top" ? "This week’s stories start here." : "A moment worth sharing?"}</h2><p>{page > 1 ? "Return to the newest moments." : "Bring a photo from somewhere you’ve been. We’ll help you find its caption."}</p><Link className="button" href={page > 1 ? "/" : signedIn ? "/create" : "/login"}>{page > 1 ? "Back to the feed" : "Create the first post"}</Link></section> : <CaptionFeed key={`${sort}:${page}`} initialPosts={posts} sort={sort} initialOffset={(page - 1) * 20} canLoadMore={posts.length === 20} signedIn={signedIn}/>}
   {page > 1 && <p><Link href={`/?sort=${sort}&page=${page - 1}`}>← Previous page</Link></p>}
   <footer className="travel-footer"><span>AI-generated captions. Human opinions.</span><Link href="/atlas">Explore the travel atlas ↗</Link><span>Rate the caption, not the traveler.</span></footer>
  </div></main>;
