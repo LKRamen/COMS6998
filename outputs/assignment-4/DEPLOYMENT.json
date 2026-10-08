@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-08",
+  "target": "production",
+  "state": "READY",
+  "project": "coms-6998",
+  "team": "lkr2124-2742s-projects",
+  "deploymentId": "dpl_CDc5a6b6Jsn7ChZyj5dRBJxz94Sx",
+  "commit": "7ace6eb90a3febae289a3bd512d6be63e272ccd3",
+  "url": "https://coms-6998-theta.vercel.app",
+  "deploymentUrl": "https://coms-6998-ovyutcu67-lkr2124-2742s-projects.vercel.app",
+  "source": "CLI deployment from clean git archive of the named commit; unrelated untracked files and local secrets excluded",
+  "environment": "Existing Supabase public config retained; service key/Gemini key configured as sensitive production variables; GEMINI_MODEL=gemini-3.5-flash",
+  "verification": [
+    "CLI inspect reported READY and production alias",
+    "Cookie-free home/login/atlas requests return HTTP 200 on main and immutable deployment URLs",
+    "Cookie-free creation request redirects to app login",
+    "Built-in Browser renders production feed and signed-in photo upload page"
+  ],
+  "notYetVerified": [
+    "Actual generation/publication through production browser",
+    "Production browser vote interactions",
+    "PM feedback iteration"
+  ],
+  "localRedirect": "App requests origin/auth/callback; Supabase must allow exact localhost:3100/auth/callback. Current allowlist not available through database-only MCP; deployment uses existing production origin."
+}

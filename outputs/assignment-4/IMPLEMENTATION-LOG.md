@@ -31,3 +31,9 @@
 - Started and registered task-owned local Next server session 14220 for browser integration. User agreed to sign in; browser is at Google account selection. Browser upload/editor acceptance remains pending. Login copy now reflects caption creation/rating and links to the caption feed.
 
 - Actual Next photo upload route passed real hosted-session checks: guest/cross-origin denial, PNG normalized to a 1600px JPEG without EXIF, saved private draft and replacement cleanup ledger. Synthetic account/photo artifacts were removed. Evidence: UPLOAD-ROUTE-VERIFICATION.json.
+
+## Authorized interim production deployment
+
+- User explicitly requested deploying the current version to try it after local sign-in redirected to the existing production site. Connector lacked team access; user completed CLI authorization. Confirmed existing team/project before mutation.
+- Deployed a clean archive of commit 7ace6eb to the existing production project; no unrelated untracked files or .env uploaded. Server/Gemini keys added as sensitive production variables. Vercel reports READY, alias coms-6998-theta.vercel.app. Details in DEPLOYMENT.json.
+- Both main and immutable deployment URLs passed cookie-free public requests. Built-in Browser displayed the new feed and the authenticated photo upload page using the user's existing production session. Production generation/publication/voting browser flows and PM feedback remain pending.

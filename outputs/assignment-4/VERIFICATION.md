@@ -31,4 +31,4 @@ Checked 2026-10-08 on local branch `codex/ai-travel-captions`.
 - Updated login copy was visually checked at 1440px and 390px; mobile content width was 390px with no horizontal overflow. The live browser is awaiting the user's Google sign-in.
 - Scoped MCP exposes database tools only; a security/performance advisor tool is unavailable. Catalog/RLS/grant inspection and runtime checks were completed instead.
 
-The caption migration is live. No branch push or deployment has been performed. Integration evidence does not yet establish a completed assignment submission.
+The caption migration and user-authorized interim production deployment are live. See DEPLOYMENT.json for commit-specific URL and production checks. Full browser generation/publication/voting and PM feedback remain pending; this interim release is not a claim that assignment acceptance is complete.
