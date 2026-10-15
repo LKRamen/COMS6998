@@ -11,6 +11,13 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "private, no-store");
     return response;
   }
+  // The callback authenticates by exchanging its code. Refreshing an expired
+  // session first can sign it out and remove the pending PKCE verifier.
+  if (request.nextUrl.pathname === "/auth/callback") {
+    const response = NextResponse.next({ request });
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.supabase_project_url;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.supabase_anon_key;
   let response = NextResponse.next({ request });

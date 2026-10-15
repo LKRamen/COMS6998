@@ -6,7 +6,11 @@ vi.mock("../../../lib/supabase/server", () => ({ createClient: async () => ({ au
 import { GET } from "./route";
 beforeEach(() => { vi.clearAllMocks(); mocks.exchange.mockResolvedValue({error:null}); mocks.getUser.mockResolvedValue({ data: { user: {id:"owner"} }, error:null }); mocks.profile.mockResolvedValue({data:{ username:"ada",display_name:"Ada",username_claimed:true },error:null}); });
 it("returns complete Google accounts directly to the feed", async () => { expect((await GET(new NextRequest("https://app.test/auth/callback?code=valid"))).headers.get("location")).toBe("https://app.test/feed"); });
+it("exchanges the callback with its per-login PKCE flow ID", async () => {
+ await GET(new NextRequest("https://app.test/auth/callback?code=valid&sb_flow_id=0123456789abcdef"));
+ expect(mocks.exchange).toHaveBeenCalledWith("valid", { flowId: "0123456789abcdef" });
+});
 it("takes new Google accounts to explicit onboarding", async () => { mocks.profile.mockResolvedValue({data:null,error:null}); expect((await GET(new NextRequest("https://app.test/auth/callback?code=valid"))).headers.get("location")).toBe("https://app.test/onboarding"); });
 it("preserves authenticated users when profile loading fails", async () => { mocks.profile.mockResolvedValue({data:null,error:{message:"outage"}}); const response = await GET(new NextRequest("https://app.test/auth/callback?code=valid")); expect(response.headers.get("location")).toBe("https://app.test/onboarding?error=profile"); expect(response.headers.get("cache-control")).toContain("no-store"); });
-it("rejects an invalid authorization code", async () => { mocks.exchange.mockResolvedValue({error:{message:"expired"}}); expect((await GET(new NextRequest("https://app.test/auth/callback?code=bad"))).headers.get("location")).toBe("https://app.test/login?error=callback"); });
+it("rejects an invalid authorization code without exposing its value or error message", async () => { mocks.exchange.mockResolvedValue({error:{message:"expired"}}); expect((await GET(new NextRequest("https://app.test/auth/callback?code=bad"))).headers.get("location")).toBe("https://app.test/login?error=callback&reason=exchange"); });
 it("does not trust external next redirects", async () => { expect((await GET(new NextRequest("https://app.test/auth/callback?code=valid&next=//evil.test"))).headers.get("location")).toBe("https://app.test/feed"); });
