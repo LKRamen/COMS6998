@@ -8,13 +8,12 @@ vi.mock("../brainrot/actions", () => ({ saveMemeCaption: caption, publishMeme: v
 vi.mock("./studio-upload", () => ({ default: () => null }));
 import MemeStudio from "./meme-studio";
 const moment: Moment = { id: "draft", photo_revision: "revision", photo_path: "", photo_url: "/photo.jpg", country_code: null, location: "", context: "", style: "Brainrot", status: "draft", selected_caption_id: null, created_at: "", published_at: null, captions: [], runs: [] };
-const allowance = { remaining: 5, reset_at: "2026-10-16T04:00:00Z" };
 beforeEach(() => { vi.useFakeTimers(); sessionStorage.clear(); save.mockReset().mockResolvedValue({ ok: true }); caption.mockReset().mockResolvedValue({ ok: true }); generate.mockReset(); });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 it("persists a reverted edit after an earlier slow save", async () => {
  let finish!: (value: unknown) => void;
  save.mockImplementationOnce(() => new Promise(resolve => { finish = resolve; })).mockResolvedValue({ ok: true });
- render(<MemeStudio moment={moment} allowance={allowance}/>);
+ render(<MemeStudio moment={moment}/>);
  fireEvent.change(screen.getByRole("textbox", { name: /^The context/ }), { target: { value: "first edit" } });
  await act(async () => { await vi.advanceTimersByTimeAsync(1200); });
  fireEvent.change(screen.getByRole("textbox", { name: /^The context/ }), { target: { value: "" } });
@@ -23,7 +22,7 @@ it("persists a reverted edit after an earlier slow save", async () => {
 });
 it("offers recovery of a local backup after a failed save or interrupted navigation", async () => {
  sessionStorage.setItem("brainrot:draft:draft:revision", JSON.stringify({ inputs: { context: "Recover this joke", location: "", style: "Brainrot" }, selected: null, text: "" }));
- render(<MemeStudio moment={moment} allowance={allowance}/>);
+ render(<MemeStudio moment={moment}/>);
  fireEvent.click(screen.getByRole("button", { name: "Restore local draft" }));
  expect(screen.getByRole("textbox", { name: /^The context/ })).toHaveValue("Recover this joke");
  await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
@@ -31,7 +30,7 @@ it("offers recovery of a local backup after a failed save or interrupted navigat
 });
 it("retains uploaded content and a useful error when generation fails", async () => {
  generate.mockResolvedValue({ ok: false, error: "The AI provider is temporarily at its limit." });
- render(<MemeStudio moment={{ ...moment, context: "Saved context" }} allowance={allowance}/>);
+ render(<MemeStudio moment={{ ...moment, context: "Saved context" }}/>);
  fireEvent.click(screen.getByRole("button", { name: "Generate captions" }));
  await act(async () => { await vi.advanceTimersByTimeAsync(0); });
  expect(screen.getByRole("alert")).toHaveTextContent("temporarily at its limit");

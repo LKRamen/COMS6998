@@ -6,7 +6,7 @@ export type Caption = { id: string; text: string; ordinal: number; generation_ru
 export type CaptionRun = CaptionInputs & { id: string; system_prompt: string; user_prompt: string; model: string; created_at: string; photo_revision: string };
 export type Moment = CaptionInputs & { id: string; country_code: string | null; photo_path: string; photo_revision: string; status: "draft" | "published"; selected_caption_id: string | null; caption_override?: string | null; rendered_path?: string | null; created_at: string; published_at: string | null; photo_url: string; captions: Caption[]; runs: CaptionRun[] };
 export type FeedPost = { id: string; caption_id: string; text: string; photo_path: string; photo_url: string; location: string; style: string; author_name: string; published_at: string; score: number; vote: -1 | 1 | null; own: boolean };
-export type Allowance = { remaining: number; reset_at: string };
+export type Allowance = { remaining: number | null; reset_at: string | null };
 type Client = Awaited<ReturnType<typeof createClient>>;
 async function imageUrl(client: Client, path: string) {
  const { data, error } = await client.storage.from("caption-photos").createSignedUrl(path, 300);

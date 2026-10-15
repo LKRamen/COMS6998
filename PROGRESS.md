@@ -84,3 +84,9 @@ Ruling: scoped live migration is additive except removal of the former required-
 - No blocking external approval remains. Fresh Google-account consent/signup and profile-avatar browser picker were not automated; existing Google setup preserved, underlying Auth/onboarding/avatar policies verified through real isolated sessions. Full dependency audit retains five dev-only lint-chain findings; production dependency audit is clean. Bootstrap manifest conflict remains documented.
 
 - Morning final check at 09:13 Eastern: immutable/stable home, feed, Explore and public image all return HTTP 200. Live RLS inventory still has zero disabled application tables; original five moments/four published/two votes retained.
+
+## Follow-up: unlimited image-first generation
+- User requested removal of the generation count cap and photo understanding without required context. Existing Gemini request already includes JPEG bytes directly, so no separate classifier/API/service is needed.
+- Versioned migration removes only the five-batch daily quota; service-only reservation permissions, per-user single-flight lease and idempotent keys remain. Existing quota_date audit history is retained. Allowance returns explicit unlimited/null values for compatibility.
+- Studio no longer fetches or disables on daily allowance. Upload/studio explain optional context and direct image analysis. Prompt brainrot-v2 explicitly grounds jokes in visible details when context is blank. Historical prompt records remain unchanged.
+- Focused 17 tests passed, including exact image bytes in Gemini payload and empty-context prompt. Isolated SQL successfully completes seven batches, rejects overlapping requests and reuses the original request key. Live function inspection confirms no cap and unchanged service-only permission.

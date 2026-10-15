@@ -9,7 +9,7 @@ import CreationControls from "./creation-controls";
 import LocationSearch from "./location-search";
 import type { SelectedLocation } from "../../lib/locations";
 import PhotoUpload from "./photo-upload";
-export default function CaptionDraft({ moment, allowance, firstName }: { moment: Moment; allowance: Allowance; firstName: string }) {
+export default function CaptionDraft({ moment, firstName }: { moment: Moment; allowance?: Allowance; firstName: string }) {
  const router = useRouter(); const [inputs, setInputs] = useState<CaptionInputs>({ context: moment.context, location: moment.location, style: moment.style });
  const [selected, setSelected] = useState(moment.selected_caption_id); const [pending, setPending] = useState(false); const [message, setMessage] = useState(""); const [error, setError] = useState("");
  const [location, setLocation] = useState<SelectedLocation | null>(moment.country_code ? { label: moment.location, country_code: moment.country_code } : null);
@@ -62,8 +62,8 @@ export default function CaptionDraft({ moment, allowance, firstName }: { moment:
   <div className="profile-form"><LocationSearch value={location} query={inputs.location} onChange={setLocation} onQueryChange={value => setInputs(current => ({ ...current, location: value }))} disabled={pending}/>
   <label>The story behind it <span className="optional">Optional</span><textarea maxLength={500} rows={3} disabled={pending} value={inputs.context} onChange={e => setInputs({ ...inputs, context: e.target.value })}/></label>
   <label>Caption style<select disabled={pending} value={inputs.style} onChange={e => setInputs({ ...inputs, style: e.target.value as CaptionInputs["style"] })}>{captionStyles.map(style => <option key={style}>{style}</option>)}</select></label></div>
-  <div className="draft-actions"><button className="text-button" disabled={pending} onClick={() => act("save")}>Save draft</button><button className="button" disabled={pending || allowance.remaining === 0} onClick={() => act("generate")}>{pending ? "Working…" : moment.runs.length ? "Generate three more" : "Generate three captions"}</button></div>
-  <p className="muted">{allowance.remaining} of 5 batches remaining. Resets at {new Date(allowance.reset_at).toLocaleString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit", month: "short", day: "numeric" })} Eastern.</p>
+  <div className="draft-actions"><button className="text-button" disabled={pending} onClick={() => act("save")}>Save draft</button><button className="button" disabled={pending} onClick={() => act("generate")}>{pending ? "Working…" : moment.runs.length ? "Generate three more" : "Generate three captions"}</button></div>
+  <p className="muted">Gemini reads your photo. No daily generation cap.</p>
   <p className="privacy-note">Generation sends this photo and context to Google Gemini. Free-tier content may be used to improve Google products. Saved prompts and earlier captions are private to you.</p>
   {error && <p className="form-message" role="alert">{error}</p>}{message && <p className="form-message success" role="status">{message}</p>}
   <div className="caption-batches">{moment.runs.map((run, index) => <section key={run.id} className="caption-batch"><h2>{index === 0 ? "Latest captions" : "Earlier batch"} <span>{run.style}{run.location ? ` · ${run.location}` : ""}</span></h2>

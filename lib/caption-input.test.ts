@@ -8,6 +8,13 @@ describe("caption boundaries", () => {
     expect(() => parseInputs({ style: "other" })).toThrow();
     expect(() => parseInputs({ style: "Funny", context: "a".repeat(501) })).toThrow();
   });
+  it("generates from the photo without requiring user context", () => {
+    const inputs = parseInputs({ style: "Brainrot" });
+    expect(inputs.context).toBe("");
+    const prompts = buildPrompts(inputs, []);
+    expect(prompts.system).toContain("First inspect the supplied image");
+    expect(prompts.system).toContain("Context is optional");
+  });
   it("requires three short distinct captions", () => {
     expect(validateCaptions({ captions: [" a ", "b", "c"] })).toEqual(["a", "b", "c"]);
     for (const captions of [["a", "A", "c"], ["a"], ["a", "", "c"], ["a", "b", "c".repeat(241)], ["a", 3, "c"]]) {

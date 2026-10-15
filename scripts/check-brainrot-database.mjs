@@ -26,8 +26,9 @@ try {
  grant select,insert,delete on public.country_visits to authenticated;
  insert into auth.users values('00000000-0000-4000-8000-000000000001'),('00000000-0000-4000-8000-000000000002');
  insert into public.profiles(id,first_name,last_name) select id,'Test','Creator' from auth.users;`);
- for (const path of ["supabase/migrations/202610080001_caption_community.sql", "supabase/migrations/20261008165700_post_locations.sql", "supabase/migrations/20261015080000_brainrot.sql", "supabase/migrations/20261015081000_brainrot_replacement_styles.sql", "supabase/migrations/20261015083000_brainrot_revision_guard.sql", "supabase/migrations/20261015084000_brainrot_revision_error.sql"]) await db.exec(await readFile(path, "utf8"));
+ for (const path of ["supabase/migrations/202610080001_caption_community.sql", "supabase/migrations/20261008165700_post_locations.sql", "supabase/migrations/20261015080000_brainrot.sql", "supabase/migrations/20261015081000_brainrot_replacement_styles.sql", "supabase/migrations/20261015083000_brainrot_revision_guard.sql", "supabase/migrations/20261015084000_brainrot_revision_error.sql", "supabase/migrations/20261015133000_unlimited_image_first_generation.sql"]) await db.exec(await readFile(path, "utf8"));
  await db.exec(await readFile("tests/brainrot-database.sql", "utf8"));
+ await db.exec(await readFile("tests/brainrot-generation-unlimited.sql", "utf8"));
  const rows = await db.query("select count(*)::int as n from pg_tables where schemaname='public' and not rowsecurity");
  assert.equal(rows.rows[0].n, 0);
  console.log("PASS Brainrot isolated migration, public projection, profile ownership, immutable publication, unvoted feed, vote uniqueness and private history assertions.");

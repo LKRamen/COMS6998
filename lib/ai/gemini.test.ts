@@ -23,7 +23,7 @@ describe("Gemini captions", () => {
   vi.stubGlobal("fetch", fetcher);
   expect(await generateCaptions({ image: Buffer.from("image"), systemPrompt: "s", userPrompt: "u" })).toEqual(["One", "Two", "Three"]);
   const body = JSON.parse(fetcher.mock.calls[0][1].body);
-  expect(body.contents[0].parts[1].inlineData.mimeType).toBe("image/jpeg");
+  expect(body.contents[0].parts[1].inlineData).toEqual({ mimeType: "image/jpeg", data: Buffer.from("image").toString("base64") });
   expect(fetcher.mock.calls[0][0]).not.toContain("test-key");
  });
  it("handles quota and safety blocks without passing raw provider messages", async () => {
