@@ -1,4 +1,8 @@
 .results { min-height: 360px; }
+.scrollStatus { min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 28px 12px; text-align: center; color: var(--muted); font-size: 13px; }
+.scrollStatus p { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0; }
+.spinner { width: 15px; height: 15px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .results :global(section.meme-gallery) { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; columns: auto; align-items: start; }
 .results :global(article.gallery-card) { min-width: 0; margin: 0; }
 .results :global(.gallery-media-link) { aspect-ratio: 4 / 5; }
@@ -11,4 +15,4 @@
 @keyframes breathe { from { opacity: .5; } to { opacity: 1; } }
 @media (max-width: 950px) { .results :global(section.meme-gallery), .skeletons { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 600px) { .results :global(section.meme-gallery), .skeletons { grid-template-columns: minmax(0, 1fr); } }
-@media (prefers-reduced-motion: reduce) { .skeletons > div { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .skeletons > div, .spinner { animation: none; } }

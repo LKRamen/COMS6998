@@ -6,7 +6,7 @@ import "./brainrot.css";
 import VoteNavigationRefresh from "./components/vote-navigation-refresh";
 
 export const metadata: Metadata = {
-  title: { default: "Brainrot · Your brain. Off duty.", template: "%s · Brainrot" },
+  title: { default: "Quip · Your brain. Off duty.", template: "%s · Quip" },
   description:
     "Turn your camera roll into comedy. Create AI memes, swipe your honest opinion, and discover your kind of funny.",
   metadataBase: new URL("https://coms-6998-theta.vercel.app"),

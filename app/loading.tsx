@@ -1,1 +1,1 @@
-export default function Loading() { return <div className="brainrot-app" role="status" aria-label="Loading Brainrot"><div className="app-main"><div className="skeleton-card"/><span className="sr-only">Loading your next good bad idea…</span></div></div>; }
+export default function Loading() { return <div className="brainrot-app" role="status" aria-label="Loading Quip"><div className="app-main"><div className="skeleton-card"/><span className="sr-only">Loading your next good bad idea…</span></div></div>; }

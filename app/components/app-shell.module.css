@@ -1,0 +1,32 @@
+nav.desktopNav a {
+  white-space: nowrap;
+}
+
+@media (min-width: 761px) and (max-width: 950px) {
+  nav.desktopNav {
+    gap: 0;
+  }
+
+  nav.desktopNav a {
+    gap: 6px;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  nav.mobileNav {
+    gap: 2px;
+    padding-inline: 8px;
+  }
+
+  nav.mobileNav a {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px;
+    padding-inline: 2px;
+  }
+
+  nav.mobileNav a span {
+    white-space: nowrap;
+  }
+}

@@ -20,10 +20,18 @@ export async function getMoment(client: Client, id: string): Promise<Moment | nu
  if (captions.error || runs.error) throw new Error("Your saved caption batches could not be loaded.");
  return { ...data, photo_url: await imageUrl(client, data.photo_path), captions: captions.data ?? [], runs: runs.data ?? [] } as Moment;
 }
-export async function getCreations(client: Client) {
- const { data, error } = await client.from("moments").select("id,status,created_at,photo_path").order("created_at", { ascending: false });
+export async function getCreations(client: Client, userId: string) {
+ const { data, error } = await client.from("moments").select("id,status,created_at,published_at,photo_path,selected_caption_id,caption_override,rendered_path,style").eq("creator_id", userId).order("created_at", { ascending: false });
  if (error) throw new Error("Your creations could not be loaded.");
- return Promise.all((data ?? []).map(async row => ({ ...row, photo_url: await imageUrl(client, row.photo_path) })));
+ const rows = data ?? [];
+ const captionIds = rows.flatMap(row => row.selected_caption_id ? [row.selected_caption_id] : []);
+ const captions = new Map<string, string>();
+ if (captionIds.length) {
+  const { data: selected, error: captionError } = await client.from("captions").select("id,text").in("id", captionIds);
+  if (captionError) throw new Error("Your creations could not be loaded.");
+  for (const caption of selected ?? []) captions.set(caption.id, caption.text);
+ }
+ return Promise.all(rows.map(async row => ({ ...row, caption: row.caption_override || captions.get(row.selected_caption_id) || "", photo_url: row.status === "published" ? `/api/meme-image/${row.id}` : await imageUrl(client, row.photo_path) })));
 }
 export async function getAllowance(client: Client): Promise<Allowance> {
  const { data, error } = await client.rpc("caption_allowance");

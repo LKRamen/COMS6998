@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { ShareNetwork } from "@phosphor-icons/react/dist/csr/ShareNetwork";
 import { Check } from "@phosphor-icons/react/dist/csr/Check";
-export default function ShareButton({ path, title = "A little brainrot for you" }: { path: string; title?: string }) {
+export default function ShareButton({ path, title = "A Quip meme for you" }: { path: string; title?: string }) {
  const [message, setMessage] = useState("");
  async function share() {
   const url = new URL(path, window.location.origin).href;

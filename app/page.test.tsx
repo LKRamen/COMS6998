@@ -7,7 +7,7 @@ vi.mock("../lib/supabase/server", () => ({ createClient: async () => ({ auth: { 
 vi.mock("next/navigation", () => ({ redirect }));
 vi.mock("./components/swipe-deck", () => ({ default: ({ initialPosts }: { initialPosts: { text: string }[] }) => <div aria-label="Community preview">{initialPosts.map(post => post.text).join(",")}</div> }));
 import Home from "./page";
-describe("Brainrot public landing", () => {
+describe("Quip public landing", () => {
  afterEach(() => { cleanup(); vi.clearAllMocks(); });
  it("explains creation and discovery without inventing content", async () => {
   discover.mockResolvedValue([]); getUser.mockResolvedValue({ data: { user: null } }); render(await Home());

@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
  const { id } = await params; if (!isUuid(id)) return { title: "Meme not found" };
  const post = (await discover(await createClient(), { id }))[0];
  if (!post) return { title: "Meme not found" };
- return { title: post.text.slice(0, 70), description: `A meme by @${post.username}: ${post.text}`, openGraph: { title: post.text, description: `By @${post.username} on Brainrot`, type: "article", images: [{ url: `/api/meme-image/${id}`, alt: post.text }] }, twitter: { card: "summary_large_image", images: [`/api/meme-image/${id}`] } };
+ return { title: post.text.slice(0, 70), description: `A meme by @${post.username}: ${post.text}`, openGraph: { title: post.text, description: `By @${post.username} on Quip`, type: "article", images: [{ url: `/api/meme-image/${id}`, alt: post.text }] }, twitter: { card: "summary_large_image", images: [`/api/meme-image/${id}`] } };
 }
 export default async function MemeDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ published?: string }> }) {
  const { id } = await params; if (!isUuid(id)) notFound();

@@ -11,7 +11,7 @@ import MemeGallery from "../../components/meme-gallery";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
  const { username } = await params; const profile = await publicCreator(await createClient(), username);
- return profile ? { title: `${profile.display_name} (@${profile.username})`, description: profile.bio || `Memes by @${profile.username} on Brainrot.` } : { title: "Creator not found" };
+ return profile ? { title: `${profile.display_name} (@${profile.username})`, description: profile.bio || `Memes by @${profile.username} on Quip.` } : { title: "Creator not found" };
 }
 export default async function CreatorProfile({ params, searchParams }: { params: Promise<{ username: string }>; searchParams: Promise<{ page?: string }> }) {
  const { username } = await params; const { page: inputPage } = await searchParams;
