@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-15T14:44:14.651Z",
+  "passed": true,
+  "taskAccountsRemoved": 2,
+  "taskPhotoAssetsRemoved": 8,
+  "taskMomentsRemoved": 5,
+  "historicalMomentsUnchanged": 6,
+  "historicalPublishedMemes": 5,
+  "historicalVotesUnchanged": 2,
+  "historicalFingerprintMatches": true,
+  "scope": "Only explicitly recorded disposable QA accounts, their rows and their scoped assets removed. Existing user content preserved."
+}

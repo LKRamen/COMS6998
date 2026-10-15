@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-15T14:41:47.800Z",
+  "base": "https://coms-6998-9yygm8v18-lkr2124-2742s-projects.vercel.app",
+  "checks": [
+    "Old map routes/API removed and no atlas footer link",
+    "Production POST returns pending202 before captions finish",
+    "Actual Vercel after task completes after leaving studio, saves3captions, status remains owner-private",
+    "Published draft stops showing generation-ready notice"
+  ],
+  "passed": true,
+  "failure": null,
+  "scope": "Real hosted Auth, new Vercel background pipeline, Gemini and publication; task-only fixtures pending cleanup after Browser QA."
+}
