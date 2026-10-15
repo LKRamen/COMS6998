@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-15T08:37:13.244Z",
+  "passed": true,
+  "mode": "votes",
+  "checks": [
+    "Real two-batch Gemini provenance retained privately; edited publication and flattened image publicly readable",
+    "Real browser upvote persisted as exactly one row and is excluded from the unvoted feed",
+    "Concurrent same desired-state requests retain one vote; public detail/gallery/creator totals agree",
+    "Vote changes/removal reconcile totals and feed eligibility; final QA vote restored to +1"
+  ],
+  "failure": null,
+  "scope": "Actual Supabase Auth sessions and role-bound HTTP API/Storage requests against the existing project. Only task-created QA fixtures mutated."
+}

@@ -8,7 +8,7 @@ import { generateCaptions, geminiConfig, generationSettings } from "../../lib/ai
 import { parseLocation, type SelectedLocation } from "../../lib/locations";
 type Result = { ok: true; message?: string } | { ok: false; error: string };
 function failure(error: unknown): { ok: false; error: string } { return { ok: false, error: error instanceof Error ? error.message : "That action could not be completed. Please try again." }; }
-function refresh(id?: string) { revalidatePath("/"); revalidatePath("/atlas"); revalidatePath("/members"); revalidatePath("/creations"); if (id) revalidatePath(`/creations/${id}`); }
+function refresh(id?: string) { revalidatePath("/"); revalidatePath("/feed"); revalidatePath("/explore"); revalidatePath("/profile/[username]", "page"); revalidatePath("/atlas"); revalidatePath("/members"); revalidatePath("/creations"); if (id) { revalidatePath(`/creations/${id}`); revalidatePath(`/meme/${id}`); } }
 function idCheck(...ids: unknown[]) { if (!ids.every(isUuid)) throw new Error("This post is unavailable."); }
 export async function castVote(captionId: string, value: -1 | 1 | null): Promise<({ ok: true; vote: -1 | 1 | null; score: number }) | { ok: false; error: string }> {
  const { supabase } = await requireCompleteProfile();
@@ -19,11 +19,11 @@ export async function castVote(captionId: string, value: -1 | 1 | null): Promise
   return { ok: true, vote: data.vote, score: Number(data.score) };
  } catch (error) { return failure(error); }
 }
-export async function saveDraft(id: string, inputs: CaptionInputs, selected: string | null): Promise<Result> {
+export async function saveDraft(id: string, inputs: CaptionInputs, selected: string | null, photoRevision?: string): Promise<Result> {
  const { supabase } = await requireCompleteProfile();
  try {
-  idCheck(id); if (selected) idCheck(selected); const value = parseInputs(inputs);
-  const { error } = await supabase.rpc("caption_save_draft", { p_moment_id: id, p_context: value.context, p_location: value.location, p_style: value.style, p_selected_caption_id: selected });
+  idCheck(id); if (selected) idCheck(selected); if (photoRevision !== undefined) idCheck(photoRevision); const value = parseInputs(inputs);
+  const { error } = await supabase.rpc(photoRevision ? "brainrot_save_draft" : "caption_save_draft", { p_moment_id: id, p_context: value.context, p_location: value.location, p_style: value.style, p_selected_caption_id: selected, ...(photoRevision ? { p_photo_revision: photoRevision } : {}) });
   if (error) throw new Error(error.message); refresh(id); return { ok: true, message: "Draft saved." };
  } catch (error) { return failure(error); }
 }

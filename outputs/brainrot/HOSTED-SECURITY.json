@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-15T08:29:33.740Z",
+  "passed": true,
+  "mode": "security",
+  "checks": [
+    "Real two-batch Gemini provenance retained privately; edited publication and flattened image publicly readable",
+    "Anonymous/self/nonexistent votes and impersonated direct vote INSERT/UPDATE/DELETE denied",
+    "Cross-user profile modification/creation, case-insensitive username takeover, meme deletion/publication denied",
+    "Private draft/media isolation and cross-owner Storage writes denied",
+    "Actual separate-HTTP stale revision write denied without overwriting replacement inputs",
+    "Own profile/avatar persistence and explicit public-avatar projection verified; private identity fields excluded"
+  ],
+  "failure": null,
+  "scope": "Actual Supabase Auth sessions and role-bound HTTP API/Storage requests against the existing project. Only task-created QA fixtures mutated."
+}

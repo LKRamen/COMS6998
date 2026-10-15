@@ -4,7 +4,7 @@ import { createAdminClient } from "./supabase/admin";
 import type { CaptionInputs } from "./caption-input";
 export type Caption = { id: string; text: string; ordinal: number; generation_run_id: string; moment_id: string };
 export type CaptionRun = CaptionInputs & { id: string; system_prompt: string; user_prompt: string; model: string; created_at: string; photo_revision: string };
-export type Moment = CaptionInputs & { id: string; country_code: string | null; photo_path: string; photo_revision: string; status: "draft" | "published"; selected_caption_id: string | null; created_at: string; published_at: string | null; photo_url: string; captions: Caption[]; runs: CaptionRun[] };
+export type Moment = CaptionInputs & { id: string; country_code: string | null; photo_path: string; photo_revision: string; status: "draft" | "published"; selected_caption_id: string | null; caption_override?: string | null; rendered_path?: string | null; created_at: string; published_at: string | null; photo_url: string; captions: Caption[]; runs: CaptionRun[] };
 export type FeedPost = { id: string; caption_id: string; text: string; photo_path: string; photo_url: string; location: string; style: string; author_name: string; published_at: string; score: number; vote: -1 | 1 | null; own: boolean };
 export type Allowance = { remaining: number; reset_at: string };
 type Client = Awaited<ReturnType<typeof createClient>>;
@@ -27,7 +27,7 @@ export async function getFeed(sort: "new" | "top", offset: number, client: Clien
  return Promise.all(posts.map(async post => ({ ...post, score: Number(post.score), photo_url: await imageUrl(client, post.photo_path), vote: votes.get(post.caption_id) ?? null, own: own.has(post.id) })));
 }
 export async function getMoment(client: Client, id: string): Promise<Moment | null> {
- const { data, error } = await client.from("moments").select("id,country_code,photo_path,photo_revision,context,location,style,status,selected_caption_id,created_at,published_at").eq("id", id).maybeSingle();
+ const { data, error } = await client.from("moments").select("id,country_code,photo_path,photo_revision,context,location,style,status,selected_caption_id,caption_override,rendered_path,created_at,published_at").eq("id", id).maybeSingle();
  if (error) throw new Error("Your draft could not be loaded.");
  if (!data) return null;
  const [captions, runs] = await Promise.all([client.from("captions").select("id,text,ordinal,generation_run_id,moment_id").eq("moment_id", id).order("ordinal"), client.from("generation_runs").select("id,context,location,style,system_prompt,user_prompt,model,created_at,photo_revision").eq("moment_id", id).order("created_at", { ascending: false })]);

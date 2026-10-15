@@ -5,10 +5,11 @@ import { isProfileComplete, readProfile } from "../../../lib/auth";
 import { normalizePhoto } from "../../../lib/caption-photo";
 import { isUuid, parseInputs } from "../../../lib/caption-input";
 import { parseLocation } from "../../../lib/locations";
+import { isSameOriginRequest } from "../../../lib/request-origin";
 export const runtime = "nodejs";
 export const maxDuration = 60;
 export async function POST(request: Request) {
- if (request.headers.get("origin") !== new URL(request.url).origin) return NextResponse.json({ error: "Please submit from this website." }, { status: 403 });
+ if (!isSameOriginRequest(request)) return NextResponse.json({ error: "Please submit from this website." }, { status: 403 });
  const client = await createClient();
  const { data: { user } } = await client.auth.getUser();
  if (!user) return NextResponse.json({ error: "Sign in to upload a photo." }, { status: 401 });

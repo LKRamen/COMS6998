@@ -3,24 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "engines": { "node": "24.x" },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "test": "vitest run",
+    "test:database": "node scripts/check-brainrot-database.mjs",
     "generate:map": "node scripts/build-world-map.mjs"
   },
   "dependencies": {
+    "@phosphor-icons/react": "2.1.10",
     "@supabase/ssr": "0.12.7",
     "@supabase/supabase-js": "2.117.2",
+    "motion": "14.2.0",
     "next": "16.3.8",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1",
-    "sharp": "^0.35.4"
+    "sharp": "0.35.5"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
     "@types/node": "26.6.1",

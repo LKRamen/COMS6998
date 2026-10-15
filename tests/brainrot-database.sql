@@ -4,6 +4,17 @@ set local role authenticated;
 select public.brainrot_save_profile('test_owner','Test Owner','A test bio',null);
 reset role;
 insert into public.moments(id,creator_id,photo_path,style) values('10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000001/photo.jpg','Brainrot');
+set local role authenticated;
+do $$ declare rev uuid; begin
+ select photo_revision into rev from public.moments where id='10000000-0000-4000-8000-000000000001';
+ perform public.brainrot_save_draft('10000000-0000-4000-8000-000000000001','current','','Brainrot',null,rev);
+ begin
+  perform public.brainrot_save_draft('10000000-0000-4000-8000-000000000001','stale overwrite','','Brainrot',null,'99999999-0000-4000-8000-000000000001');
+  raise exception 'Stale photo revision accepted';
+ exception when invalid_parameter_value then null; end;
+ if (select context from public.moments where id='10000000-0000-4000-8000-000000000001')<>'current' then raise exception 'Stale save changed context'; end if;
+end $$;
+reset role;
 insert into public.generation_runs(id,moment_id,creator_id,photo_revision,photo_path,request_key,context,location,style,system_prompt,user_prompt,model,settings)
 select '20000000-0000-4000-8000-000000000001',id,creator_id,photo_revision,photo_path,gen_random_uuid(),'','','Brainrot','private prompt','private context','test','{}' from public.moments;
 insert into public.captions(id,generation_run_id,moment_id,creator_id,ordinal,text) values('30000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000001','10000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000001',1,'Original AI caption');

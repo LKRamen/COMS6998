@@ -1,46 +1,21 @@
+/* eslint-disable @next/next/no-img-element -- The avatar route projects only the user's explicitly public avatar. */
 import Link from "next/link";
-import { isProfileComplete, readProfile, requireUser } from "../../lib/auth";
-import { saveProfile } from "./actions";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
+import { Folder } from "@phosphor-icons/react/dist/ssr/Folder";
+import { Globe } from "@phosphor-icons/react/dist/ssr/Globe";
+import { SignOut } from "@phosphor-icons/react/dist/ssr/SignOut";
+import { requireUser, isProfileComplete } from "../../lib/auth";
 import { signOut } from "../auth/actions";
-
-const errors: Record<string, string> = {
-  names: "Enter both names, using up to 80 characters each.",
-  photo: "Choose a JPEG, PNG, or WebP photo no larger than 2 MB.",
-  upload: "Your photo could not be uploaded. Please try again.",
-  save: "Your profile could not be saved. Please try again.",
-  signout: "Sign-out failed. Please try again.",
-};
-
-export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
-  const { supabase, user } = await requireUser();
-  const profile = await readProfile(supabase, user.id);
-  const { error, saved } = await searchParams;
-  let photoUrl: string | undefined;
-  if (profile?.avatar_path) {
-    const { data } = await supabase.storage.from("avatars").createSignedUrl(profile.avatar_path, 300);
-    photoUrl = data?.signedUrl;
-  }
-  const complete = isProfileComplete(profile);
-  return <main className="account-page"><div className="account-card">
-    <p className="eyebrow">BEEN THERE / YOUR ACCOUNT</p>
-    <h1>{complete ? "Your profile" : "Let’s get to know you."}</h1>
-    <p className="page-intro">{complete ? "Keep your name and photo up to date." : "Add your first and last name to finish signing up and start your travel map."}</p>
-    <p className="account-email">Signed in as {user.email}</p>
-    {photoUrl && <picture><img className="avatar" src={photoUrl} alt="Your profile photo" width="96" height="96" /></picture>}
-    {error && <p className="form-message" role="alert">{errors[error] ?? "Something went wrong. Please try again."}</p>}
-    {saved && <p className="form-message success" role="status">Profile saved.</p>}
-    {!profile && <p className="form-message" role="alert">Your profile is unavailable. Please try again later.</p>}
-    <form action={saveProfile} className="profile-form">
-      <label>First name<input name="first_name" autoComplete="given-name" defaultValue={profile?.first_name ?? ""} required maxLength={80} /></label>
-      <label>Last name<input name="last_name" autoComplete="family-name" defaultValue={profile?.last_name ?? ""} required maxLength={80} /></label>
-      <label>Profile photo <span className="optional">(optional)</span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-help" /></label>
-      <p id="photo-help" className="field-help">JPEG, PNG, or WebP. Maximum 2 MB.</p>
-      <button className="button" type="submit" disabled={!profile}>Save profile</button>
-    </form>
-    <nav className="account-links" aria-label="Account">
-      {complete && <Link href="/members">Go to my travels →</Link>}
-      <Link href="/">Community map</Link>
-      <form action={signOut}><button type="submit" className="text-button">Sign out</button></form>
-    </nav>
-  </div></main>;
+import { saveCreatorProfile } from "./creator-actions";
+import AppShell from "../components/app-shell";
+const errors: Record<string, string> = { fields: "Use a username of 3–40 letters, numbers or underscores, a display name up to 80 characters, and a bio up to 240 characters.", username: "That username is already taken. Try another.", photo: "Choose a still JPEG, PNG or WebP avatar under 2 MB.", upload: "Your avatar couldn’t be uploaded. Try again.", visibility: "Select Display my avatar publicly when uploading a new public avatar.", save: "Your profile couldn’t be saved. Please try again.", signout: "Sign-out failed. Please try again." };
+export default async function ProfileSettings({ searchParams }: { searchParams: Promise<{ error?: string; saved?: string }> }) {
+ const { supabase, user } = await requireUser(); const { error, saved } = await searchParams;
+ const result = await supabase.from("profiles").select("id,first_name,last_name,username,display_name,bio,avatar_path,public_avatar_path").eq("id", user.id).maybeSingle();
+ if (result.error) throw new Error("Your profile couldn’t be loaded. Please try again.");
+ const profile = result.data; const complete = isProfileComplete(profile);
+ return <AppShell signedIn current="profile"><main className="creator-settings"><header className="section-heading"><div><p className="overline">YOUR CORNER OF THE INTERNET</p><h1>{complete ? "Main character" : "Make an entrance"}<span>.</span></h1></div><p>{complete ? "A little personality goes a long way." : "Choose a name. Claim your corner."}</p></header><div className="settings-layout"><aside className="settings-aside"><div className="profile-avatar-large">{profile?.public_avatar_path ? <img src={`/api/avatar/${profile.username}`} alt="Your public avatar" width="90" height="90"/> : (profile?.display_name || "?").slice(0, 1).toUpperCase()}</div><h2>{profile?.display_name || "Your profile"}</h2><p>{user.email}</p><nav aria-label="Account links">{profile?.username && <Link href={`/profile/${profile.username}`}><ArrowUpRight size={15}/>Public profile</Link>}<Link href="/creations"><Folder size={15}/>My creations & drafts</Link><Link href="/members"><Globe size={15}/>My original travel map</Link><form action={signOut}><button type="submit"><SignOut size={15}/>Sign out</button></form></nav></aside><section>
+  {error && <p className="form-message" role="alert">{errors[error] ?? errors.save}</p>}{saved && <p className="form-message success" role="status">Profile saved. Your corner looks good.</p>}{!profile && <p className="studio-note">Finish setting up your profile below. Your account will have one profile.</p>}
+  <form action={saveCreatorProfile} className="settings-form"><label>Display name<input name="display_name" defaultValue={profile?.display_name || profile?.first_name || ""} maxLength={80} required autoComplete="nickname" placeholder="What should we call you?"/></label><label>Username<input name="username" defaultValue={profile?.username?.startsWith("user_") ? "" : profile?.username ?? ""} pattern="[a-zA-Z0-9_]{3,40}" minLength={3} maxLength={40} required autoComplete="username" placeholder="your_handle"/><span className="field-help">Your public @handle. Letters, numbers and underscores. You can change it later.</span></label><label>Bio <span className="optional">Optional</span><textarea name="bio" defaultValue={profile?.bio ?? ""} maxLength={240} rows={3} placeholder="An extremely accurate description of your sense of humor."/></label><label>Avatar <span className="optional">Optional</span><input type="file" name="photo" accept="image/jpeg,image/png,image/webp"/><span className="field-help">Still JPEG, PNG or WebP. Maximum 2 MB. Location metadata is removed.</span></label><label className="checkbox-label"><span><input type="checkbox" name="show_avatar" defaultChecked={Boolean(profile?.public_avatar_path) || !profile?.avatar_path}/> Display my avatar publicly</span><span className="field-help">Your display name, username, bio and published memes are public. Your email, drafts and generation prompts stay private.</span></label><button className="button" type="submit">{complete ? "Save changes" : "Create my profile"}<ArrowUpRight size={17}/></button></form>
+ </section></div></main></AppShell>;
 }

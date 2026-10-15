@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 
 import "./globals.css";
+import "./brainrot.css";
 
 export const metadata: Metadata = {
-  title: "Been there · Every trip has a caption",
+  title: { default: "Brainrot · Your brain. Off duty.", template: "%s · Brainrot" },
   description:
-    "Share travel photos, generate AI captions, and rate the moments that land. Explore our shared travel atlas.",
+    "Turn your camera roll into comedy. Create AI memes, swipe your honest opinion, and discover your kind of funny.",
+  metadataBase: new URL("https://coms-6998-theta.vercel.app"),
 };
 
 export default function RootLayout({

@@ -1,7 +1,7 @@
 // Disposable PostgreSQL-compatible test database. Does not contact production.
 import { readFile } from "node:fs/promises";
 import assert from "node:assert/strict";
-import { PGlite } from "../work/sql-check/node_modules/@electric-sql/pglite/dist/index.js";
+import { PGlite } from "@electric-sql/pglite";
 const db = new PGlite();
 try {
  await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -26,7 +26,7 @@ try {
  grant select,insert,delete on public.country_visits to authenticated;
  insert into auth.users values('00000000-0000-4000-8000-000000000001'),('00000000-0000-4000-8000-000000000002');
  insert into public.profiles(id,first_name,last_name) select id,'Test','Creator' from auth.users;`);
- for (const path of ["supabase/migrations/202610080001_caption_community.sql", "supabase/migrations/20261008165700_post_locations.sql", "supabase/migrations/20261015080000_brainrot.sql"]) await db.exec(await readFile(path, "utf8"));
+ for (const path of ["supabase/migrations/202610080001_caption_community.sql", "supabase/migrations/20261008165700_post_locations.sql", "supabase/migrations/20261015080000_brainrot.sql", "supabase/migrations/20261015081000_brainrot_replacement_styles.sql", "supabase/migrations/20261015083000_brainrot_revision_guard.sql", "supabase/migrations/20261015084000_brainrot_revision_error.sql"]) await db.exec(await readFile(path, "utf8"));
  await db.exec(await readFile("tests/brainrot-database.sql", "utf8"));
  const rows = await db.query("select count(*)::int as n from pg_tables where schemaname='public' and not rowsecurity");
  assert.equal(rows.rows[0].n, 0);
