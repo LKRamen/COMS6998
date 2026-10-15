@@ -58,5 +58,5 @@ Failures are listed by meme ID; private partial rows/assets remain available for
 Boundary tests:
 
 ```powershell
-npx vitest run scripts/bulk-import-input.node-test.mjs
+npx vitest run scripts/bulk-import-input.test.mjs
 ```

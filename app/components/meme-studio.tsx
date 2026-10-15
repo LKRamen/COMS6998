@@ -26,7 +26,7 @@ export default function MemeStudio({ moment }: { moment: Moment }) {
  const awaitingStatus = Boolean(requestedJob && !jobs.some(job => job.id === requestedJob));
  const generating = pending === "generate" || job?.state === "pending" || awaitingStatus;
  const locked = Boolean(pending) || generating;
- const generationError = !generating && (job?.state === "failed" || job?.state === "expired") ? "This generation did not finish. Your photo and draft are saved. Generate again to retry." : "";
+ const generationError = !generating && (job?.state === "failed" || job?.state === "expired") ? job.error_message || "This generation did not finish. Your photo and draft are saved. Generate again to retry." : "";
  const refreshedRun = useRef<string | null>(null);
  useEffect(() => {
   if (job?.state === "succeeded" && job.run_id && !moment.runs.some(run => run.id === job.run_id) && refreshedRun.current !== job.run_id) { refreshedRun.current = job.run_id; router.refresh(); }

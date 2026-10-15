@@ -33,6 +33,7 @@ try {
  insert into public.generation_runs(moment_id,creator_id,photo_revision,photo_path,request_key,context,location,style,system_prompt,user_prompt,model,settings)
  select id,creator_id,photo_revision,photo_path,gen_random_uuid(),'','Retired place','Funny','legacy test prompt','{"location":"Retired place","context":"","style":"Funny"}','test','{}' from public.moments where id='10000000-0000-4000-8000-000000000080';`);
  await db.exec(await readFile("supabase/migrations/20261015150000_retire_maps_and_claim_usernames.sql", "utf8"));
+ await db.exec(await readFile("supabase/migrations/20261015153000_generation_error_messages.sql", "utf8"));
  await db.exec(await readFile("tests/brainrot-current.sql", "utf8"));
  await db.exec(await readFile("tests/brainrot-generation-unlimited-current.sql", "utf8"));
  const rows = await db.query("select count(*)::int as n from pg_tables where schemaname='public' and not rowsecurity");

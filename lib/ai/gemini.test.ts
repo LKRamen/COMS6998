@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 vi.mock("server-only", () => ({}));
 import { generateCaptions, generationSettings } from "./gemini";
 describe("Gemini captions", () => {
- afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
+ afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
  it("requires server configuration", async () => {
   vi.stubEnv("GEMINI_API_KEY", ""); vi.stubEnv("GEMINI_MODEL", "");
   await expect(generateCaptions({ image: Buffer.from("image"), systemPrompt: "s", userPrompt: "u" })).rejects.toThrow("not configured");
@@ -30,7 +30,40 @@ describe("Gemini captions", () => {
   vi.stubEnv("GEMINI_API_KEY", "test"); vi.stubEnv("GEMINI_MODEL", "test-model");
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("private provider message", { status: 429 })));
   await expect(generateCaptions({ image: Buffer.from("i"), systemPrompt: "s", userPrompt: "u" })).rejects.toThrow("temporarily at its limit");
+  expect(fetch).toHaveBeenCalledOnce();
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ promptFeedback: { blockReason: "SAFETY" } })));
   await expect(generateCaptions({ image: Buffer.from("i"), systemPrompt: "s", userPrompt: "u" })).rejects.toThrow("could not generate");
+ });
+ it("retries transient provider overload with the same image, prompt and shared deadline", async () => {
+  vi.useFakeTimers(); vi.stubEnv("GEMINI_API_KEY", "test"); vi.stubEnv("GEMINI_MODEL", "test-model");
+  const signal = new AbortController().signal; const timeout = vi.spyOn(AbortSignal, "timeout").mockReturnValue(signal);
+  const fetcher = vi.fn().mockResolvedValueOnce(new Response("private overload body", { status: 503 })).mockResolvedValueOnce(Response.json({ candidates: [{ finishReason: "STOP", content: { parts: [{ text: JSON.stringify({ captions: ["One", "Two", "Three"] }) }] } }] }));
+  vi.stubGlobal("fetch", fetcher);
+  const result = generateCaptions({ image: Buffer.from("image"), systemPrompt: "s", userPrompt: "u" });
+  const completed = expect(result).resolves.toEqual(["One", "Two", "Three"]);
+  await vi.advanceTimersByTimeAsync(999); expect(fetcher).toHaveBeenCalledOnce();
+  await vi.advanceTimersByTimeAsync(1); await completed;
+  expect(fetcher).toHaveBeenCalledTimes(2); expect(timeout).toHaveBeenCalledExactlyOnceWith(45000);
+  expect(fetcher.mock.calls[1][1].signal).toBe(fetcher.mock.calls[0][1].signal);
+  expect(fetcher.mock.calls[1][1].body).toBe(fetcher.mock.calls[0][1].body);
+ });
+ it("bounds overload retries and never exposes the raw provider body", async () => {
+  vi.useFakeTimers(); vi.stubEnv("GEMINI_API_KEY", "test"); vi.stubEnv("GEMINI_MODEL", "test-model");
+  const fetcher = vi.fn().mockImplementation(async () => new Response("private provider failure with secrets", { status: 503 })); vi.stubGlobal("fetch", fetcher);
+  const result = generateCaptions({ image: Buffer.from("i"), systemPrompt: "s", userPrompt: "u" });
+  const failed = expect(result).rejects.toThrow("temporarily unavailable");
+  await vi.advanceTimersByTimeAsync(3000); await failed;
+  expect(fetcher).toHaveBeenCalledTimes(3);
+ });
+ it("counts backoff against the original deadline instead of starting a new timeout", async () => {
+  vi.useFakeTimers(); vi.stubEnv("GEMINI_API_KEY", "test"); vi.stubEnv("GEMINI_MODEL", "test-model");
+  const controller = new AbortController();
+  vi.spyOn(AbortSignal, "timeout").mockImplementation(milliseconds => { setTimeout(() => controller.abort(), milliseconds); return controller.signal; });
+  const fetcher = vi.fn().mockImplementation(() => new Promise(resolve => { setTimeout(() => resolve(new Response("overloaded", { status: 503 })), 44500); }));
+  vi.stubGlobal("fetch", fetcher);
+  const result = generateCaptions({ image: Buffer.from("i"), systemPrompt: "s", userPrompt: "u" }).then(value => ({ value, error: null }), error => ({ value: null, error }));
+  await vi.advanceTimersByTimeAsync(45000);
+  expect((await result).error).toHaveProperty("message", expect.stringContaining("timed out"));
+  expect(fetcher).toHaveBeenCalledOnce();
  });
 });

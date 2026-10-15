@@ -58,3 +58,10 @@ it("recovers an in-progress job after navigation and refreshes when its saved ca
  expect(refresh).toHaveBeenCalledOnce();
  expect(screen.getByRole("button", { name: "Generate captions" })).toBeEnabled();
 });
+it("shows the saved provider failure after returning to the studio and allows retry", async () => {
+ vi.stubGlobal("fetch", vi.fn(async () => ({ ok: true, json: async () => ({ jobs: [{ id: "failed-job", moment_id: moment.id, photo_revision: moment.photo_revision, state: "failed", error_message: "The AI provider is temporarily unavailable. Your draft is saved; try again shortly." }] }) })));
+ render(<MemeStudio moment={moment}/>);
+ await act(async () => { await vi.advanceTimersByTimeAsync(0); });
+ expect(screen.getByRole("alert")).toHaveTextContent("temporarily unavailable");
+ expect(screen.getByRole("button", { name: "Generate captions" })).toBeEnabled();
+});

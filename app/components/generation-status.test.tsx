@@ -28,3 +28,9 @@ it("provides a recovery path for an expired worker without showing a permanent s
  expect(screen.getByRole("status")).toHaveTextContent("needs another try");
  expect(screen.getByRole("link", { name: /Retry in studio/ })).toHaveAttribute("href", "/creations/my-draft");
 });
+it("explains a safely persisted provider failure", () => {
+ status.mockReturnValue({ jobs: [{ ...job, state: "failed", error_message: "The AI provider is temporarily unavailable. Your draft is saved; try again shortly." }], error: "" });
+ render(<GenerationStatus/>);
+ expect(screen.getByRole("status")).toHaveTextContent("temporarily unavailable");
+ expect(screen.getByRole("link", { name: /Retry in studio/ })).toBeInTheDocument();
+});
