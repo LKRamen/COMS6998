@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-10-15T19:10:54.867643+00:00",
+  "deployment": {
+    "url": "https://coms-6998-fifsrpz92-lkr2124-2742s-projects.vercel.app",
+    "stable_url": "https://coms-6998-theta.vercel.app",
+    "status": "READY",
+    "target": "production",
+    "source_commit": "36ef55ee9cb946ebfe13749f69a55f7919913bc3",
+    "deployment_id": "dpl_AfqSkF5PQRTXYGE6X1mEJdFRxqei",
+    "project": "coms-6998",
+    "framework": "Next.js16.3.8",
+    "cloud_build_duration": "not reported by inspect"
+  },
+  "automated": {
+    "vitest_files": 36,
+    "vitest_tests": 139,
+    "passed": true,
+    "scoped_eslint": "passed",
+    "production_build_and_typescript": "passed",
+    "peer_reviews": "no actionable findings"
+  },
+  "real_infrastructure": {
+    "supabase_project": "swmgfanscadzfkqoctle",
+    "new_account_onboarding": "passed using disposable authenticated account; name conflict retains input, unique handle saved, feed reached",
+    "session_refresh": "passed for disposable account and real existing Google account",
+    "google_oauth": "real existing Columbia account from stable login reaches signed-in feed and remains signed in on refresh",
+    "new_google_account_creation": "not exercised; onboarding verified separately on a newly created test account",
+    "combined_generation": "one photo action with blank context saved source and generated3real Gemini captions",
+    "publish": "selected caption persisted once with flattened rendered image",
+    "explore_own_post": "Your post label and0vote buttons on disposable and real owner posts",
+    "desktop_mobile": "1280x900 and390x844 visually checked",
+    "public_feed": 200,
+    "root_code_and_flow_id_forwarding": "passed",
+    "anonymous_onboarding_guard": "passed",
+    "rls": "all7application tables remain enabled; no migration or policy change"
+  },
+  "cleanup": {
+    "passed": true,
+    "disposableAccountRemoved": true,
+    "testMomentsRemoved": 1,
+    "testAssetsRemoved": 2,
+    "historicalRowsPreserved": true
+  },
+  "limitations": [
+    "Supabase dashboard current login lacks target project access; no provider settings changed.",
+    "Initial live OAuth failed; protecting callback from pre-exchange session refresh plus optional flow-ID forwarding passed real retry. Exact original provider-side cause was not directly logged.",
+    "Vercel log connector403; installed CLI supports new live logs only, not historical scan."
+  ],
+  "services": "All task preview/broker sessions stopped;3120/3121closed; temporary Browser tabs closed and viewport reset.",
+  "observability": {
+    "historical_runtime_logs": "connector returned403; installed CLI does not support historical queries",
+    "bounded_live_cli_fallback": {
+      "access_denied": false,
+      "events_observed": 0,
+      "error_events": 0,
+      "interpretation": "no events observed; not evidence that historical logs are clean"
+    },
+    "browser_console": "no warnings/errors observed on verified studio and live feed"
+  }
+}
