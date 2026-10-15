@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-15T13:13:50.563Z",
+  "passed": true,
+  "checks": [
+    {
+      "label": "immutable",
+      "status": 200
+    },
+    {
+      "label": "feed",
+      "status": 200
+    },
+    {
+      "label": "explore",
+      "status": 200
+    },
+    {
+      "label": "stable",
+      "status": 200
+    },
+    {
+      "label": "public-image",
+      "status": 200
+    }
+  ]
+}
