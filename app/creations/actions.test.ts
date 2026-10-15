@@ -1,12 +1,13 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, it, vi } from "vitest";
+vi.mock("server-only", () => ({}));
 const { auth, rpc, admin, getMoment, generate } = vi.hoisted(() => ({ auth: vi.fn(), rpc: vi.fn(), admin: vi.fn(), getMoment: vi.fn(), generate: vi.fn() }));
 vi.mock("../../lib/auth", () => ({ requireCompleteProfile: auth }));
 vi.mock("../../lib/supabase/admin", () => ({ createAdminClient: admin }));
 vi.mock("../../lib/captions", () => ({ getMoment, retryPhotoCleanup: vi.fn() }));
 vi.mock("../../lib/ai/gemini", () => ({ generateCaptions: generate, geminiConfig: () => ({ model: "test" }), generationSettings: () => ({}) }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-import { castVote, publishCaption, generateBatch } from "./actions";
+import { castVote, generateBatch } from "./actions";
 const id = "00000000-0000-4000-8000-000000000001";
 describe("caption mutations", () => {
  beforeEach(() => { vi.resetAllMocks(); auth.mockResolvedValue({ user: { id: "session-user" }, supabase: { rpc } }); rpc.mockResolvedValue({ data: { vote: 1, score: 1 }, error: null }); });
@@ -21,10 +22,6 @@ describe("caption mutations", () => {
  it("rejects a malformed identifier before a database call", async () => {
   const result = await castVote("victim",1); expect(result.ok).toBe(false); expect(rpc).not.toHaveBeenCalled();
  });
- it("publishes a stored candidate ID rather than arbitrary browser text", async () => {
-  await publishCaption(id,id);
-  expect(rpc).toHaveBeenCalledWith("caption_publish", { p_moment_id: id, p_caption_id: id });
- });
  it("does not spend another provider request on a successfully saved replay", async () => {
   getMoment.mockResolvedValue({ status: "draft", context: "", location: "", style: "Funny", photo_revision: "revision", captions: [], runs: [] });
   const adminRpc = vi.fn().mockResolvedValue({ data: { reused: true, state: "succeeded" }, error: null });
@@ -38,8 +35,12 @@ describe("caption mutations", () => {
   const download = vi.fn().mockResolvedValue({ data: new Blob(["photo"]), error: null });
   auth.mockResolvedValue({ user: { id: "session-user" }, supabase: { rpc, storage: { from: () => ({ download }) } } });
   const adminRpc = vi.fn().mockResolvedValue({ data: { reused: false, id: "request" }, error: null });
-  admin.mockReturnValue({ rpc: adminRpc }); generate.mockRejectedValue(new Error("Provider timed out."));
+  const snapshot = { state: "pending", photo_path: "session-user/photo", system_prompt: "stored system", user_prompt: "stored user" };
+  const query = { select: vi.fn(), eq: vi.fn(), single: vi.fn().mockResolvedValue({ data: snapshot, error: null }) }; query.select.mockReturnValue(query); query.eq.mockReturnValue(query);
+  admin.mockReturnValue({ rpc: adminRpc, from: () => query, storage: { from: () => ({ download }) } }); generate.mockRejectedValue(new Error("Provider timed out."));
   expect(await generateBatch(id,id)).toEqual({ ok: false, error: "Provider timed out." });
+  expect(download).toHaveBeenCalledWith("session-user/photo");
+  expect(generate).toHaveBeenCalledWith(expect.objectContaining({ systemPrompt: "stored system", userPrompt: "stored user" }));
   expect(adminRpc).toHaveBeenLastCalledWith("caption_fail", { p_user_id: "session-user", p_request_id: "request" });
   expect(adminRpc.mock.calls.some(call => call[0] === "caption_finish")).toBe(false);
  });

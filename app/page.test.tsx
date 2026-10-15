@@ -1,6 +1,7 @@
 import { render, screen, cleanup } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-const { discover, getUser, redirect } = vi.hoisted(() => ({ discover: vi.fn(), getUser: vi.fn(), redirect: vi.fn((url: string) => { throw new Error(`REDIRECT:${url}`); }) }));
+const { discover, getUser, readProfile, redirect } = vi.hoisted(() => ({ discover: vi.fn(), getUser: vi.fn(), readProfile: vi.fn(), redirect: vi.fn((url: string) => { throw new Error(`REDIRECT:${url}`); }) }));
+vi.mock("../lib/auth", async () => ({ ...(await vi.importActual<typeof import("../lib/auth")>("../lib/auth")), readProfile }));
 vi.mock("../lib/memes", () => ({ discover }));
 vi.mock("../lib/supabase/server", () => ({ createClient: async () => ({ auth: { getUser } }) }));
 vi.mock("next/navigation", () => ({ redirect }));
@@ -23,7 +24,11 @@ describe("Brainrot public landing", () => {
   expect(screen.getByRole("alert")).toHaveTextContent("couldn’t load memes");
  });
  it("sends signed-in users to their swipe feed", async () => {
-  getUser.mockResolvedValue({ data: { user: { id: "user" } } }); await expect(Home()).rejects.toThrow("REDIRECT:/feed");
+  getUser.mockResolvedValue({ data: { user: { id: "user" } } }); readProfile.mockResolvedValue({ username: "sam", display_name: "Sam", username_claimed: true }); await expect(Home()).rejects.toThrow("REDIRECT:/feed");
   expect(discover).not.toHaveBeenCalled();
+ });
+ it("guides existing accounts with unclaimed handles to choose their username", async () => {
+  getUser.mockResolvedValue({ data: { user: { id: "user" } } }); readProfile.mockResolvedValue({ username: "sam", display_name: "Sam", username_claimed: false });
+  await expect(Home()).rejects.toThrow("REDIRECT:/profile");
  });
 });

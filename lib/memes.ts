@@ -1,7 +1,6 @@
 import "server-only";
 import { createClient } from "./supabase/server";
-import type { FeedPost } from "./captions";
-export type Meme = FeedPost & { username: string; avatar_path: string | null; rendered_path: string | null; upvotes: number; downvotes: number };
+export type Meme = { id: string; caption_id: string; text: string; photo_path: string; photo_url: string; style: string; author_name: string; published_at: string; score: number; vote: -1 | 1 | null; own: boolean; username: string; avatar_path: string | null; rendered_path: string | null; upvotes: number; downvotes: number };
 export type PublicCreator = { id: string; username: string; display_name: string; bio: string; avatar_path: string | null; created_at: string; memes: number; upvotes: number };
 export type DiscoverSort = "swipe" | "new" | "trending" | "top";
 type Client = Awaited<ReturnType<typeof createClient>>;

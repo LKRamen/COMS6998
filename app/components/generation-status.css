@@ -1,0 +1,6 @@
+.generation-notice { max-width: 1440px; margin: 12px auto 0; padding: 16px 32px; display: flex; align-items: center; gap: 20px; background: #202019; border-block: 1px solid #454231; color: #f5f3e7; }
+.generation-notice > div { flex: 1; display: grid; gap: 4px; }
+.generation-notice strong { font-size: 14px; }
+.generation-notice span { color: #c5c3b8; font-size: 13px; }
+.generation-notice a, .generation-notice button { flex-shrink: 0; min-height: 44px; }
+@media (max-width: 600px) { .generation-notice { padding: 12px 20px; gap: 10px; flex-wrap: wrap; } .generation-notice > div { flex-basis: 65%; } }

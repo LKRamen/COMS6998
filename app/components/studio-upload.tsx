@@ -23,7 +23,7 @@ export default function StudioUpload({ momentId }: { momentId?: string }) {
   if (!photo) { setError("Choose an image first."); picker.current?.focus(); return; }
   busy.current = true; setPending(true); setError(""); setStatus("Preparing your image…");
   try {
-   const form = new FormData(event.currentTarget); form.set("style", style); form.set("location", "");
+   const form = new FormData(event.currentTarget); form.set("style", style);
    if (momentId) form.set("moment_id", momentId);
    const bitmap = await createImageBitmap(photo, { imageOrientation: "from-image" });
    try {

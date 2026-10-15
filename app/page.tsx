@@ -4,17 +4,19 @@ import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
 import { Sparkle } from "@phosphor-icons/react/dist/ssr/Sparkle";
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr/ArrowRight";
 import { createClient } from "../lib/supabase/server";
+import { isProfileComplete, readProfile } from "../lib/auth";
 import { discover, type Meme } from "../lib/memes";
 import AppShell from "./components/app-shell";
 import SwipeDeck from "./components/swipe-deck";
 export const dynamic = "force-dynamic";
 export default async function Home() {
- let posts: Meme[] = [], failed = false, signedIn = false;
+ let posts: Meme[] = [], failed = false, signedIn = false, profileComplete = false;
  try {
   const client = await createClient(); const { data: { user } } = await client.auth.getUser(); signedIn = Boolean(user);
-  if (!signedIn) posts = await discover(client, { sort: "trending" });
+  if (user) profileComplete = isProfileComplete(await readProfile(client, user.id));
+  else posts = await discover(client, { sort: "trending" });
  } catch { failed = true; }
- if (signedIn) redirect("/feed");
+ if (signedIn) redirect(profileComplete ? "/feed" : "/profile");
  return <AppShell signedIn={false}><main className="landing-page"><section className="landing-hero"><div className="landing-copy">
   <p className="overline"><span className="accent-dot"/> A VERY GOOD USE OF YOUR BAD IDEAS</p>
   <h1>Your brain.<br/><span>Off duty.</span></h1>

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { ArrowRight } from "@phosphor-icons/react/dist/csr/ArrowRight";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/csr/ArrowUpRight";
@@ -19,6 +19,7 @@ export default function SwipeDeck({ initialPosts, signedIn, preview = false }: {
  const [error, setError] = useState(""), [authNeeded, setAuthNeeded] = useState(false), [rated, setRated] = useState(0);
  const [hasMore, setHasMore] = useState(initialPosts.length === 20 && !preview);
  const busy = useRef(false), fetching = useRef(false), seen = useRef(new Set(initialPosts.map(p => p.id)));
+ const completed = useRef(new Set<string>());
  const mounted = useRef(true); const x = useMotionValue(0), rotation = useTransform(x, [-250, 250], [-15, 15]);
  const positive = useTransform(x, [30, 110], [0, 1]), negative = useTransform(x, [-110, -30], [1, 0]);
  const reduced = useReducedMotion(); const current = queue[0];
@@ -38,13 +39,14 @@ export default function SwipeDeck({ initialPosts, signedIn, preview = false }: {
  }, [hasMore]);
  useEffect(() => { if (queue.length <= 5) void fetchMore(); }, [queue.length, fetchMore]);
  const rate = useCallback(async (value: -1 | 1) => {
-  if (!current || busy.current) return;
+  if (!current || busy.current || completed.current.has(current.id)) return;
   if (!signedIn) { setAuthNeeded(true); await animate(x, 0, { type: "spring", stiffness: 430, damping: 30 }); return; }
   busy.current = true; setPending(true); setError("");
   try {
    const [result] = await Promise.all([voteMeme(current.caption_id, value), animate(x, value * Math.max(window.innerWidth, 650), { duration: reduced ? 0 : 0.26, ease: "easeOut" })]);
    if (!mounted.current) return;
    if (!result.ok) { if (result.login) setAuthNeeded(true); throw new Error(result.error); }
+   completed.current.add(current.id);
    x.set(0); setQueue(items => items.filter(post => post.id !== current.id)); setRated(count => count + 1);
   } catch (error) {
    if (!mounted.current) return;
@@ -52,12 +54,13 @@ export default function SwipeDeck({ initialPosts, signedIn, preview = false }: {
    setError(error instanceof Error ? error.message : "Your vote couldn’t be saved. Try again.");
   } finally { busy.current = false; if (mounted.current) setPending(false); }
  }, [current, signedIn, x, reduced]);
- useEffect(() => {
+ // Switch the keyboard callback in the same commit as the visible card, before another key can target it.
+ useLayoutEffect(() => {
   if (preview) return;
   const keyboard = (event: KeyboardEvent) => {
    if (event.defaultPrevented || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
    const target = event.target;
-   if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input,textarea,select,button,a,[role=dialog]"))) return;
+   if (target instanceof HTMLElement && (target.isContentEditable || target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="dialog"],[role="slider"],[role="spinbutton"],[role="combobox"],[role="listbox"],[role="menu"],[role="tablist"],[role="tree"],[role="radiogroup"]'))) return;
    if (event.key === "ArrowLeft" || event.key === "ArrowRight") { event.preventDefault(); void rate(event.key === "ArrowRight" ? 1 : -1); }
   };
   window.addEventListener("keydown", keyboard); return () => window.removeEventListener("keydown", keyboard);

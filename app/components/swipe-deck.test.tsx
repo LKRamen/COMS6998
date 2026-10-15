@@ -12,7 +12,7 @@ vi.mock("motion/react", async () => {
  return { motion: { article: TestArticle, div: (props: React.HTMLAttributes<HTMLDivElement>) => <div className={props.className}>{props.children}</div> }, useMotionValue: () => ({ set: vi.fn() }), useTransform: () => 0, useReducedMotion: () => true, animate: () => Promise.resolve() };
 });
 import SwipeDeck from "./swipe-deck";
-const meme = (id: string): Meme => ({ id, caption_id: id, text: `Caption ${id}`, photo_path: "", photo_url: "/photo.jpg", location: "", style: "Brainrot", author_name: "Sam", username: "sam", avatar_path: null, rendered_path: null, published_at: "2026-10-15T00:00:00Z", score: 0, upvotes: 0, downvotes: 0, vote: null, own: false });
+const meme = (id: string): Meme => ({ id, caption_id: id, text: `Caption ${id}`, photo_path: "", photo_url: "/photo.jpg", style: "Brainrot", author_name: "Sam", username: "sam", avatar_path: null, rendered_path: null, published_at: "2026-10-15T00:00:00Z", score: 0, upvotes: 0, downvotes: 0, vote: null, own: false });
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
 it("does not submit guest gestures and offers sign-in", async () => {
  render(<SwipeDeck initialPosts={[meme("one")]} signedIn={false}/>);
@@ -41,4 +41,28 @@ it("restores the same card after a write failure and allows retry", async () => 
 it("does not intercept arrow keys when a text field has focus", () => {
  render(<><input aria-label="Search"/><SwipeDeck initialPosts={[meme("one")]} signedIn/></>);
  fireEvent.keyDown(screen.getByRole("textbox"), { key: "ArrowRight" }); expect(vote).not.toHaveBeenCalled();
+});
+
+it("accepts arrows after a voting button or navigation link receives focus", async () => {
+ vote.mockResolvedValue({ ok: true, vote: 1, score: 1 });
+ render(<><a href="/feed">Feed navigation</a><SwipeDeck initialPosts={[meme("one"), meme("two"), meme("three")]} signedIn/></>);
+ const up = screen.getByRole("button", { name: "Upvote meme" }); up.focus();
+ fireEvent.keyDown(up, { key: "ArrowRight" });
+ await waitFor(() => expect(screen.getByRole("article", { name: "Current meme" })).toHaveTextContent("Caption two"));
+ const navigation = screen.getByRole("link", { name: "Feed navigation" }); navigation.focus();
+ fireEvent.keyDown(navigation, { key: "ArrowLeft" });
+ await waitFor(() => expect(vote).toHaveBeenLastCalledWith("two", -1));
+ await waitFor(() => expect(screen.getByRole("article", { name: "Current meme" })).toHaveTextContent("Caption three"));
+ expect(vote.mock.calls).toEqual([["one", 1], ["two", -1]]);
+});
+it("leaves editor, selection, dialog and modifier keys alone", () => {
+ render(<><div contentEditable suppressContentEditableWarning data-testid="editor">Editing</div><div role="slider" aria-label="Volume" aria-valuenow={5}/><div role="dialog"><button>Dialog action</button></div><SwipeDeck initialPosts={[meme("one")]} signedIn/></>);
+ for (const target of [screen.getByTestId("editor"), screen.getByRole("slider"), screen.getByRole("button", { name: "Dialog action" })]) fireEvent.keyDown(target, { key: "ArrowRight" });
+ fireEvent.keyDown(window, { key: "ArrowRight", ctrlKey: true });
+ fireEvent.keyDown(window, { key: "ArrowRight", repeat: true });
+ expect(vote).not.toHaveBeenCalled();
+});
+it("keeps landing previews out of global keyboard voting", () => {
+ render(<SwipeDeck initialPosts={[meme("one")]} signedIn preview/>);
+ fireEvent.keyDown(window, { key: "ArrowRight" }); expect(vote).not.toHaveBeenCalled();
 });

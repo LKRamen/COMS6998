@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { announceGenerationChange, useGenerationJobs } from "../../lib/use-generation-jobs";
 import { Sparkle } from "@phosphor-icons/react/dist/csr/Sparkle";
 import { ArrowUpRight } from "@phosphor-icons/react/dist/csr/ArrowUpRight";
 import { Check } from "@phosphor-icons/react/dist/csr/Check";
@@ -8,16 +10,27 @@ import { ArrowClockwise } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
 import { FloppyDisk } from "@phosphor-icons/react/dist/csr/FloppyDisk";
 import type { Moment } from "../../lib/captions";
 import { captionStyles, parseInputs, type CaptionInputs } from "../../lib/caption-input";
-import { saveDraft, generateBatch } from "../creations/actions";
+import { saveDraft } from "../creations/actions";
 import { publishMeme, saveMemeCaption } from "../brainrot/actions";
 import MemeMedia from "./meme-media";
 import StudioUpload from "./studio-upload";
 function subscribeBackup(listener: () => void) { window.addEventListener("brainrot-draft-backup", listener); return () => window.removeEventListener("brainrot-draft-backup", listener); }
 export default function MemeStudio({ moment }: { moment: Moment }) {
  const router = useRouter();
- const [inputs, setInputs] = useState<CaptionInputs>({ context: moment.context, location: moment.location, style: moment.style });
+ const [inputs, setInputs] = useState<CaptionInputs>({ context: moment.context, style: moment.style });
  const [selected, setSelected] = useState(moment.selected_caption_id), [text, setText] = useState(moment.caption_override || moment.captions.find(c => c.id === moment.selected_caption_id)?.text || "");
  const [pending, setPending] = useState<"generate" | "publish" | "save" | null>(null), [error, setError] = useState(""), [message, setMessage] = useState("");
+ const { jobs, error: statusError } = useGenerationJobs();
+ const [requestedJob, setRequestedJob] = useState<string | null>(null);
+ const job = jobs.find(job => job.moment_id === moment.id && job.photo_revision === moment.photo_revision);
+ const awaitingStatus = Boolean(requestedJob && !jobs.some(job => job.id === requestedJob));
+ const generating = pending === "generate" || job?.state === "pending" || awaitingStatus;
+ const locked = Boolean(pending) || generating;
+ const generationError = !generating && (job?.state === "failed" || job?.state === "expired") ? "This generation did not finish. Your photo and draft are saved. Generate again to retry." : "";
+ const refreshedRun = useRef<string | null>(null);
+ useEffect(() => {
+  if (job?.state === "succeeded" && job.run_id && !moment.runs.some(run => run.id === job.run_id) && refreshedRun.current !== job.run_id) { refreshedRun.current = job.run_id; router.refresh(); }
+ }, [job, moment.runs, router]);
  const busy = useRef(false), dirty = useRef(false);
  const [autosaving, setAutosaving] = useState(false);
  const latestDraft = useRef({ inputs, selected, text });
@@ -84,17 +97,22 @@ export default function MemeStudio({ moment }: { moment: Moment }) {
   } catch { setError("This local backup no longer matches your photo. Discard it and continue with the saved draft."); }
  }
  async function act(kind: "generate" | "publish" | "save") {
-  if (busy.current) return; busy.current = true; setPending(kind); setError(""); setMessage("");
+  if (busy.current || generating) return; busy.current = true; setPending(kind); setError(""); setMessage("");
   try {
    await persist();
-   if (kind === "generate") { const result = await generateBatch(moment.id, crypto.randomUUID()); if (!result.ok) throw new Error(result.error); setMessage("Three fresh takes. Pick the one that gets you."); router.refresh(); }
+   if (kind === "generate") {
+    const response = await fetch("/api/generations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ momentId: moment.id, requestKey: crypto.randomUUID() }), keepalive: true });
+    const result = await response.json(); if (!response.ok) throw new Error(result.error || "Generation could not start. Your saved draft is safe.");
+    setRequestedJob(result.job.id); announceGenerationChange();
+    setMessage("Generation started. You can head back to the feed—we’ll save your captions here.");
+   }
    if (kind === "publish") { if (!selected) throw new Error("Choose a generated caption first."); const result = await publishMeme(moment.id, selected, text); if (!result.ok) throw new Error(result.error); router.push(`/meme/${result.id}?published=1`); router.refresh(); }
    if (kind === "save") setMessage("Draft saved. Pick it up anytime in My creations.");
   } catch (error) { setError(error instanceof Error ? error.message : "Something went wrong. Your saved draft is safe."); }
   finally { busy.current = false; setPending(null); }
  }
  async function choose(id: string, caption: string) {
-  if (busy.current) return; setSelected(id); setText(caption); dirty.current = true;
+  if (busy.current || generating) return; setSelected(id); setText(caption); dirty.current = true;
   busy.current = true; setPending("save"); setError("");
   try { await persist(id, caption); setMessage("Selection saved."); }
   catch (error) { setError(error instanceof Error ? error.message : "Your selection couldn’t be saved. Try Save draft."); }
@@ -102,13 +120,13 @@ export default function MemeStudio({ moment }: { moment: Moment }) {
  }
  return <div className="studio-workspace"><section className="studio-preview"><div className="preview-label"><span>YOUR MEME PREVIEW</span><span>PRIVATE DRAFT</span></div><MemeMedia src={moment.photo_url} caption={text || "Your next good bad idea goes here."} eager/>
   <details className="private-history"><summary>Replace source image</summary><p className="studio-note">Replacing the image clears your selection. Earlier captions remain in private history.</p><StudioUpload momentId={moment.id}/></details>
- </section><section>{backup && backup !== JSON.stringify({ inputs, selected, text }) && <div className="form-message"><p>Unsaved edits from this tab are available.</p><div className="studio-button-row"><button className="secondary-button" onClick={restoreBackup} disabled={Boolean(pending)}>Restore local draft</button><button className="secondary-button" onClick={clearBackup}>Discard local backup</button></div></div>}<div className="studio-fields"><label>The context <span>Optional. Add details the photo can’t show.</span><textarea value={inputs.context} maxLength={500} rows={3} disabled={Boolean(pending)} onChange={event => { dirty.current = true; setInputs({ ...inputs, context: event.target.value }); }}/></label><div><p className="studio-caption-label">Pick your flavor</p><div className="style-options" role="group" aria-label="Humor style">{captionStyles.slice(0, 7).map(style => <button key={style} type="button" aria-pressed={inputs.style === style} disabled={Boolean(pending)} onClick={() => { dirty.current = true; setInputs({ ...inputs, style }); }}>{style}</button>)}</div></div><button className="button" disabled={Boolean(pending)} onClick={() => void act("generate")}>{pending === "generate" ? "Letting AI cook…" : latest ? "Generate three more" : "Generate captions"}{latest ? <ArrowClockwise size={18}/> : <Sparkle size={18} weight="fill"/>}</button><p className="studio-note">Gemini reads your photo. No description needed, and no daily generation cap.</p></div>
-  {pending === "generate" && <div className="generation-indicator" role="status"><Sparkle size={19}/>Finding the joke in your photo. Your draft is saved.</div>}{error && <p className="form-message" role="alert">{error}</p>}{message && <p className="form-message success" role="status">{message}</p>}
-  {candidates.length > 0 && <section className="studio-candidates"><h2>Three takes. Your call.</h2>{candidates.map((caption, index) => <button key={caption.id} className="meme-choice" aria-pressed={selected === caption.id} disabled={Boolean(pending)} onClick={() => void choose(caption.id, caption.text)}><span>{selected === caption.id ? <Check size={12}/> : index + 1}</span><span>{caption.text}</span></button>)}</section>}
-  {selected && <section className="studio-publish"><label className="studio-caption-label">Make it yours <span>Edit your selected AI caption. {text.length}/240 characters.</span><textarea value={text} maxLength={240} rows={3} disabled={Boolean(pending)} onChange={event => { dirty.current = true; setText(event.target.value); }}/></label><div className="studio-button-row"><button className="secondary-button" disabled={Boolean(pending)} onClick={() => void act("save")}><FloppyDisk size={16}/>{pending === "save" ? "Saving…" : "Save draft"}</button><button className="button" disabled={Boolean(pending) || !text.trim()} onClick={() => void act("publish")}>{pending === "publish" ? "Making it official…" : "Publish meme"}<ArrowUpRight size={18}/></button></div><p className="studio-note">Publishing makes your meme and creator name public. The caption stays fixed once people can vote. Your prompts and unselected captions stay private.</p></section>}
-  {!selected && <p><button className="secondary-button" disabled={Boolean(pending)} onClick={() => void act("save")}><FloppyDisk size={16}/>Save draft</button></p>}
+ </section><section>{backup && backup !== JSON.stringify({ inputs, selected, text }) && <div className="form-message"><p>Unsaved edits from this tab are available.</p><div className="studio-button-row"><button className="secondary-button" onClick={restoreBackup} disabled={locked}>Restore local draft</button><button className="secondary-button" onClick={clearBackup}>Discard local backup</button></div></div>}<div className="studio-fields"><label>The context <span>Optional. Add details the photo can’t show.</span><textarea value={inputs.context} maxLength={500} rows={3} disabled={locked} onChange={event => { dirty.current = true; setInputs({ ...inputs, context: event.target.value }); }}/></label><div><p className="studio-caption-label">Pick your flavor</p><div className="style-options" role="group" aria-label="Humor style">{captionStyles.slice(0, 7).map(style => <button key={style} type="button" aria-pressed={inputs.style === style} disabled={locked} onClick={() => { dirty.current = true; setInputs({ ...inputs, style }); }}>{style}</button>)}</div></div><button className="button" disabled={locked} onClick={() => void act("generate")}>{generating ? "Letting AI cook…" : latest ? "Generate three more" : "Generate captions"}{latest ? <ArrowClockwise size={18}/> : <Sparkle size={18} weight="fill"/>}</button><p className="studio-note">Gemini reads your photo. No description needed, and no daily generation cap.</p></div>
+  {generating && <div className="generation-indicator" role="status"><Sparkle size={19}/><span>Finding the joke in your photo. You can leave this page.<br/><Link href="/feed">Keep scrolling while we cook ↗</Link></span></div>}{(error || generationError || (generating && statusError)) && <p className="form-message" role="alert">{error || generationError || statusError}</p>}{message && <p className="form-message success" role="status">{message}</p>}
+  {candidates.length > 0 && <section className="studio-candidates"><h2>Three takes. Your call.</h2>{candidates.map((caption, index) => <button key={caption.id} className="meme-choice" aria-pressed={selected === caption.id} disabled={locked} onClick={() => void choose(caption.id, caption.text)}><span>{selected === caption.id ? <Check size={12}/> : index + 1}</span><span>{caption.text}</span></button>)}</section>}
+  {selected && <section className="studio-publish"><label className="studio-caption-label">Make it yours <span>Edit your selected AI caption. {text.length}/240 characters.</span><textarea value={text} maxLength={240} rows={3} disabled={locked} onChange={event => { dirty.current = true; setText(event.target.value); }}/></label><div className="studio-button-row"><button className="secondary-button" disabled={locked} onClick={() => void act("save")}><FloppyDisk size={16}/>{pending === "save" ? "Saving…" : "Save draft"}</button><button className="button" disabled={locked || !text.trim()} onClick={() => void act("publish")}>{pending === "publish" ? "Making it official…" : "Publish meme"}<ArrowUpRight size={18}/></button></div><p className="studio-note">Publishing makes your meme and creator name public. The caption stays fixed once people can vote. Your prompts and unselected captions stay private.</p></section>}
+  {!selected && <p><button className="secondary-button" disabled={locked} onClick={() => void act("save")}><FloppyDisk size={16}/>Save draft</button></p>}
   {autosaving && <p className="studio-note" role="status">Saving your draft…</p>}
-  <details className="private-history"><summary>Private generation history & prompts · {moment.runs.length} batches</summary>{moment.runs.map(run => <section key={run.id}><h3>{run.style} · {run.model}</h3>{run.photo_revision !== moment.photo_revision && <p>Generated for an earlier image.</p>}{moment.captions.filter(c => c.generation_run_id === run.id).map(c => <p key={c.id}>{c.text}{run.photo_revision === moment.photo_revision && <button className="text-button" disabled={Boolean(pending)} onClick={() => void choose(c.id, c.text)}>Use this caption</button>}</p>)}<pre>{run.system_prompt}</pre><pre>{run.user_prompt}</pre></section>)}</details>
+  <details className="private-history"><summary>Private generation history & prompts · {moment.runs.length} batches</summary>{moment.runs.map(run => <section key={run.id}><h3>{run.style} · {run.model}</h3>{run.photo_revision !== moment.photo_revision && <p>Generated for an earlier image.</p>}{moment.captions.filter(c => c.generation_run_id === run.id).map(c => <p key={c.id}>{c.text}{run.photo_revision === moment.photo_revision && <button className="text-button" disabled={locked} onClick={() => void choose(c.id, c.text)}>Use this caption</button>}</p>)}<pre>{run.system_prompt}</pre><pre>{run.user_prompt}</pre></section>)}</details>
   <p className="studio-note" style={{ marginTop: 24 }}>Generation sends your image and context to Google Gemini. Free-tier content may be used to improve Google products. Your draft stays saved if generation fails.</p>
  </section></div>;
 }

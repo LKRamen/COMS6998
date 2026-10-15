@@ -29,6 +29,12 @@ try {
  for (const path of ["supabase/migrations/202610080001_caption_community.sql", "supabase/migrations/20261008165700_post_locations.sql", "supabase/migrations/20261015080000_brainrot.sql", "supabase/migrations/20261015081000_brainrot_replacement_styles.sql", "supabase/migrations/20261015083000_brainrot_revision_guard.sql", "supabase/migrations/20261015084000_brainrot_revision_error.sql", "supabase/migrations/20261015133000_unlimited_image_first_generation.sql"]) await db.exec(await readFile(path, "utf8"));
  await db.exec(await readFile("tests/brainrot-database.sql", "utf8"));
  await db.exec(await readFile("tests/brainrot-generation-unlimited.sql", "utf8"));
+ await db.exec(`insert into public.moments(id,creator_id,photo_path,context,location,style) values('10000000-0000-4000-8000-000000000080','00000000-0000-4000-8000-000000000001','00000000-0000-4000-8000-000000000001/legacy.jpg','','Retired place','Funny');
+ insert into public.generation_runs(moment_id,creator_id,photo_revision,photo_path,request_key,context,location,style,system_prompt,user_prompt,model,settings)
+ select id,creator_id,photo_revision,photo_path,gen_random_uuid(),'','Retired place','Funny','legacy test prompt','{"location":"Retired place","context":"","style":"Funny"}','test','{}' from public.moments where id='10000000-0000-4000-8000-000000000080';`);
+ await db.exec(await readFile("supabase/migrations/20261015150000_retire_maps_and_claim_usernames.sql", "utf8"));
+ await db.exec(await readFile("tests/brainrot-current.sql", "utf8"));
+ await db.exec(await readFile("tests/brainrot-generation-unlimited-current.sql", "utf8"));
  const rows = await db.query("select count(*)::int as n from pg_tables where schemaname='public' and not rowsecurity");
  assert.equal(rows.rows[0].n, 0);
  console.log("PASS Brainrot isolated migration, public projection, profile ownership, immutable publication, unvoted feed, vote uniqueness and private history assertions.");

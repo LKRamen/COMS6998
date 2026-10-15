@@ -9,23 +9,25 @@ vi.mock("./supabase/server", () => ({ createClient: async () => ({
 }) }));
 import { requireUser, requireCompleteProfile, isProfileComplete } from "./auth";
 describe("protected access", () => {
-  it("rejects missing and whitespace-only names", () => {
+  it("requires an explicitly claimed username and display name", () => {
     expect(isProfileComplete(null)).toBe(false);
-    expect(isProfileComplete({ first_name: "Ada", last_name: "  " })).toBe(false);
-    expect(isProfileComplete({ first_name: " Ada ", last_name: "Lovelace" })).toBe(true);
+    expect(isProfileComplete({ username: "ada", display_name: "Ada", username_claimed: false })).toBe(false);
+    expect(isProfileComplete({ username: "  ", display_name: "Ada", username_claimed: true })).toBe(false);
+    expect(isProfileComplete({ username: "ada", display_name: "  ", username_claimed: true })).toBe(false);
+    expect(isProfileComplete({ username: "ada", display_name: " Ada ", username_claimed: true })).toBe(true);
   });
   it("redirects unauthenticated visitors", async () => {
     getUser.mockResolvedValueOnce({ data: { user: null }, error: null });
     await expect(requireUser()).rejects.toThrow("redirect:/login");
   });
-  it("requires profile completion before the members route", async () => {
+  it("requires profile completion before creating content", async () => {
     getUser.mockResolvedValueOnce({ data: { user: { id: "user-1" } }, error: null });
-    profile.mockResolvedValueOnce({ data: { first_name: "Ada", last_name: null }, error: null });
+    profile.mockResolvedValueOnce({ data: { username: "ada", display_name: "Ada", username_claimed: false }, error: null });
     await expect(requireCompleteProfile()).rejects.toThrow("redirect:/profile");
   });
-  it("allows an authenticated user with both names", async () => {
+  it("allows an authenticated user with a claimed public identity", async () => {
     getUser.mockResolvedValueOnce({ data: { user: { id: "user-1" } }, error: null });
-    profile.mockResolvedValueOnce({ data: { first_name: "Ada", last_name: "Lovelace" }, error: null });
+    profile.mockResolvedValueOnce({ data: { username: "ada", display_name: "Ada", username_claimed: true }, error: null });
     expect((await requireCompleteProfile()).user.id).toBe("user-1");
   });
 });
