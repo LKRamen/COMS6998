@@ -1,0 +1,527 @@
+{
+  "checkedAt": "2026-10-15T15:09:02.899Z",
+  "passed": true,
+  "archiveImages": 100,
+  "publishedMemes": 83,
+  "omittedImages": 17,
+  "accounts": {
+    "johndoe": 42,
+    "lkramen": 41
+  },
+  "savedCaptionCandidates": 249,
+  "savedPrivateGenerationRecords": 83,
+  "publicImagesVerified": 83,
+  "historicalRowsPreserved": {
+    "moments": 6,
+    "captions": 18,
+    "generation_runs": 6,
+    "caption_votes": 2
+  },
+  "observedVotesOnImportedMemes": 0,
+  "geminiApiCalls": 0,
+  "policy": "Source images and assistant-authored captions screened for classroom use. Unsafe source images omitted. No synthetic votes or users. Existing RLS retained.",
+  "items": [
+    {
+      "sourceIndex": 2,
+      "username": "johndoe",
+      "caption": "The TA watching us argue about whether 0.1 plus 0.2 equals 0.3.",
+      "url": "https://coms-6998-theta.vercel.app/meme/dac1b711-fe32-8d0c-9b4c-51ce9bd37245"
+    },
+    {
+      "sourceIndex": 3,
+      "username": "lkramen",
+      "caption": "Me hearing the professor say the lowest homework grade gets dropped.",
+      "url": "https://coms-6998-theta.vercel.app/meme/ccbf598c-3b97-862f-9b43-86cf49b799b4"
+    },
+    {
+      "sourceIndex": 4,
+      "username": "johndoe",
+      "caption": "That random screenshot I took three weeks ago finally becoming useful.",
+      "url": "https://coms-6998-theta.vercel.app/meme/2e44b365-722e-8785-a306-7dac4f0dac54"
+    },
+    {
+      "sourceIndex": 5,
+      "username": "lkramen",
+      "caption": "Everyone comparing difficult classes until the person taking five labs walks in.",
+      "url": "https://coms-6998-theta.vercel.app/meme/5bb8718a-2941-8182-89d8-6b8262ad16a6"
+    },
+    {
+      "sourceIndex": 6,
+      "username": "johndoe",
+      "caption": "My contribution to the group project: hands-on, technically.",
+      "url": "https://coms-6998-theta.vercel.app/meme/3f45bcb8-9c49-8513-b27e-a7093baf5f80"
+    },
+    {
+      "sourceIndex": 8,
+      "username": "lkramen",
+      "caption": "Me scheduling an 8 AM and then blaming the university.",
+      "url": "https://coms-6998-theta.vercel.app/meme/1066d5b6-f61a-8da0-9c04-79b8b621d6d6"
+    },
+    {
+      "sourceIndex": 9,
+      "username": "johndoe",
+      "caption": "We need fresh ideas. Have we tried starting before the night it is due?",
+      "url": "https://coms-6998-theta.vercel.app/meme/3c948bcd-12b0-842e-b02d-52e9446b9f2b"
+    },
+    {
+      "sourceIndex": 10,
+      "username": "lkramen",
+      "caption": "The assignment says recommended reading. I respect its commitment to choice.",
+      "url": "https://coms-6998-theta.vercel.app/meme/ad65a646-60d9-8517-b70b-0fe776d418ac"
+    },
+    {
+      "sourceIndex": 11,
+      "username": "johndoe",
+      "caption": "Free food. Free pizza. Free pizza with no networking requirement.",
+      "url": "https://coms-6998-theta.vercel.app/meme/ffb511e5-a5de-889f-93c3-fd3b89764279"
+    },
+    {
+      "sourceIndex": 13,
+      "username": "lkramen",
+      "caption": "Me leaving the group chat after submitting my one paragraph.",
+      "url": "https://coms-6998-theta.vercel.app/meme/66cf9b59-e7e2-8304-a4e3-e013addc34c1"
+    },
+    {
+      "sourceIndex": 14,
+      "username": "johndoe",
+      "caption": "When two teammates independently say they already finished my part.",
+      "url": "https://coms-6998-theta.vercel.app/meme/3ee7e8d8-0c24-8b66-bb6b-19b62ae9f489"
+    },
+    {
+      "sourceIndex": 15,
+      "username": "lkramen",
+      "caption": "My solution when the bug could be fixed with one line but I rewrite the app.",
+      "url": "https://coms-6998-theta.vercel.app/meme/e1346e82-f904-8abe-b1f7-afb184113784"
+    },
+    {
+      "sourceIndex": 17,
+      "username": "johndoe",
+      "caption": "Before coffee: abstract art. After coffee: the assignment is due today.",
+      "url": "https://coms-6998-theta.vercel.app/meme/e8798fa9-059f-8bf4-92cb-b3e263f1bff2"
+    },
+    {
+      "sourceIndex": 19,
+      "username": "lkramen",
+      "caption": "Are you studying? Emotionally, I am in the library.",
+      "url": "https://coms-6998-theta.vercel.app/meme/cdad5030-fde7-8fad-ae6e-e673a3b952c7"
+    },
+    {
+      "sourceIndex": 20,
+      "username": "johndoe",
+      "caption": "The textbook watching me ask the same question online.",
+      "url": "https://coms-6998-theta.vercel.app/meme/42191d36-6fb9-844a-9f11-e097b6c05004"
+    },
+    {
+      "sourceIndex": 23,
+      "username": "lkramen",
+      "caption": "Me opening the class group chat after missing exactly one lecture.",
+      "url": "https://coms-6998-theta.vercel.app/meme/c47d095b-95bd-86fb-ac07-25af1ec056e2"
+    },
+    {
+      "sourceIndex": 25,
+      "username": "johndoe",
+      "caption": "Where my free time went after I said this semester would be different.",
+      "url": "https://coms-6998-theta.vercel.app/meme/aa278985-7d2a-82a6-9ef2-43ac8b17b021"
+    },
+    {
+      "sourceIndex": 26,
+      "username": "lkramen",
+      "caption": "Me saying yes to another commitment because next week looks empty.",
+      "url": "https://coms-6998-theta.vercel.app/meme/6ae39091-56b9-8f92-8c73-e98ce1a0f90b"
+    },
+    {
+      "sourceIndex": 27,
+      "username": "johndoe",
+      "caption": "Calling my laptop to ask where it saved the file this time.",
+      "url": "https://coms-6998-theta.vercel.app/meme/e42edbf4-4fa2-8320-aab3-8877b9ad80b3"
+    },
+    {
+      "sourceIndex": 28,
+      "username": "lkramen",
+      "caption": "When the practice problem finally looks like the one from lecture.",
+      "url": "https://coms-6998-theta.vercel.app/meme/a6758f1f-44ca-8a87-9f79-d5bff8b07e66"
+    },
+    {
+      "sourceIndex": 29,
+      "username": "johndoe",
+      "caption": "Me waiting for the professor to mention the part that is on the exam.",
+      "url": "https://coms-6998-theta.vercel.app/meme/520b751c-2269-88e7-964f-98e19ee28325"
+    },
+    {
+      "sourceIndex": 30,
+      "username": "lkramen",
+      "caption": "My stress level when the professor says quick announcement at 11:58 PM.",
+      "url": "https://coms-6998-theta.vercel.app/meme/8da5cb5e-6da1-8048-9468-256834e014f1"
+    },
+    {
+      "sourceIndex": 31,
+      "username": "johndoe",
+      "caption": "Me watching the dining hall employee bring out the good cookies.",
+      "url": "https://coms-6998-theta.vercel.app/meme/9293f7f8-a974-89e6-a86b-30ebd382efa9"
+    },
+    {
+      "sourceIndex": 32,
+      "username": "lkramen",
+      "caption": "The final project requirements versus my confidence after one tutorial.",
+      "url": "https://coms-6998-theta.vercel.app/meme/2d37a2a4-ed4b-8cb3-bf00-eb2a65d50662"
+    },
+    {
+      "sourceIndex": 33,
+      "username": "johndoe",
+      "caption": "My group project partner after promising to appear at every meeting.",
+      "url": "https://coms-6998-theta.vercel.app/meme/9f4a5d17-e7a7-895e-9e7d-5ae5b7c59bc5"
+    },
+    {
+      "sourceIndex": 35,
+      "username": "lkramen",
+      "caption": "When someone says the assignment was easy and then asks for my answers.",
+      "url": "https://coms-6998-theta.vercel.app/meme/5e1fa54b-cfc3-8a95-b218-f1ec3ffa449a"
+    },
+    {
+      "sourceIndex": 36,
+      "username": "johndoe",
+      "caption": "Me calling a walk to the printer a wellness break.",
+      "url": "https://coms-6998-theta.vercel.app/meme/48550bbc-dcee-849d-855f-2de9e2c46ea0"
+    },
+    {
+      "sourceIndex": 37,
+      "username": "lkramen",
+      "caption": "Me saying every browser tab matters until the laptop fan starts.",
+      "url": "https://coms-6998-theta.vercel.app/meme/771c5688-592f-8299-9090-51247c3dcbbf"
+    },
+    {
+      "sourceIndex": 39,
+      "username": "johndoe",
+      "caption": "Are you winning? The code runs, but I no longer do.",
+      "url": "https://coms-6998-theta.vercel.app/meme/6be5ba31-5959-833b-a1b7-fd812ddf2482"
+    },
+    {
+      "sourceIndex": 40,
+      "username": "lkramen",
+      "caption": "Me entering office hours with one question and leaving with seven.",
+      "url": "https://coms-6998-theta.vercel.app/meme/e2deac55-048a-894f-94e0-7f0c31de1d89"
+    },
+    {
+      "sourceIndex": 41,
+      "username": "johndoe",
+      "caption": "Who changed the shared document title to final FINAL actually final?",
+      "url": "https://coms-6998-theta.vercel.app/meme/568e711e-c603-8247-bc4d-46fb3f0c8b56"
+    },
+    {
+      "sourceIndex": 42,
+      "username": "lkramen",
+      "caption": "Me protecting the one evening on my calendar that has no events.",
+      "url": "https://coms-6998-theta.vercel.app/meme/c38f934c-c718-8b2e-b3e2-b08594533355"
+    },
+    {
+      "sourceIndex": 43,
+      "username": "johndoe",
+      "caption": "My brain at 2 AM: remember that awkward email from freshman year?",
+      "url": "https://coms-6998-theta.vercel.app/meme/efb12e01-7ab6-8a41-9c17-8e06fed7e351"
+    },
+    {
+      "sourceIndex": 44,
+      "username": "lkramen",
+      "caption": "Different majors. Different opinions. United by a broken printer.",
+      "url": "https://coms-6998-theta.vercel.app/meme/60464478-eb79-8c30-af82-8c27e031c2e1"
+    },
+    {
+      "sourceIndex": 45,
+      "username": "johndoe",
+      "caption": "Me trying to get both the student discount and the loyalty points.",
+      "url": "https://coms-6998-theta.vercel.app/meme/96502b68-e579-8c60-b8e0-479c4d95e317"
+    },
+    {
+      "sourceIndex": 46,
+      "username": "lkramen",
+      "caption": "My seat ten minutes after I said I would only get a snack.",
+      "url": "https://coms-6998-theta.vercel.app/meme/640dfd7f-b7f8-886a-b0f3-efa039aa661e"
+    },
+    {
+      "sourceIndex": 47,
+      "username": "johndoe",
+      "caption": "I have seen one green checkmark. My work here is complete.",
+      "url": "https://coms-6998-theta.vercel.app/meme/114464c8-0fbb-8a13-b307-19b5bfd4d4ef"
+    },
+    {
+      "sourceIndex": 48,
+      "username": "lkramen",
+      "caption": "When the baby says a first word and it is an error code.",
+      "url": "https://coms-6998-theta.vercel.app/meme/66e5556c-a9f6-8cf5-974d-d5b78765e940"
+    },
+    {
+      "sourceIndex": 49,
+      "username": "johndoe",
+      "caption": "Me preparing to explain that restarting the laptop is a valid solution.",
+      "url": "https://coms-6998-theta.vercel.app/meme/5f07d760-7c07-8d42-81ee-0ff5bd920d14"
+    },
+    {
+      "sourceIndex": 50,
+      "username": "lkramen",
+      "caption": "Me asking for an extension using the phrase unforeseen circumstances.",
+      "url": "https://coms-6998-theta.vercel.app/meme/715a6992-597b-8015-a6d3-7e177838cdf2"
+    },
+    {
+      "sourceIndex": 51,
+      "username": "johndoe",
+      "caption": "Inside me are two wolves. One wants a nap. The other also wants a nap.",
+      "url": "https://coms-6998-theta.vercel.app/meme/7c00c0e4-e2dc-8df8-a87b-41d2b24c512d"
+    },
+    {
+      "sourceIndex": 52,
+      "username": "lkramen",
+      "caption": "Me defending my approach until someone shows a solution with three lines.",
+      "url": "https://coms-6998-theta.vercel.app/meme/29608c60-1b44-858e-bdc3-d5e8134f64d3"
+    },
+    {
+      "sourceIndex": 53,
+      "username": "johndoe",
+      "caption": "The group project after one person says I already made a shared folder.",
+      "url": "https://coms-6998-theta.vercel.app/meme/0f198845-d0ee-8bf0-94ee-db5d5bfd5196"
+    },
+    {
+      "sourceIndex": 54,
+      "username": "lkramen",
+      "caption": "It works on my machine is not a deployment strategy.",
+      "url": "https://coms-6998-theta.vercel.app/meme/15025c08-5bdc-80bb-8d85-02d4804625ad"
+    },
+    {
+      "sourceIndex": 56,
+      "username": "johndoe",
+      "caption": "The note says there is a second page to the exam.",
+      "url": "https://coms-6998-theta.vercel.app/meme/d5bfcad0-384f-8ab3-b35b-a9643bd634d5"
+    },
+    {
+      "sourceIndex": 57,
+      "username": "lkramen",
+      "caption": "The budget meeting when someone suggests using the free version.",
+      "url": "https://coms-6998-theta.vercel.app/meme/dcac35b2-47e7-83d6-8acb-e34dc38e486e"
+    },
+    {
+      "sourceIndex": 58,
+      "username": "johndoe",
+      "caption": "The universe rearranging itself so I can read one more chapter.",
+      "url": "https://coms-6998-theta.vercel.app/meme/6773f2cb-0bb2-88f4-9d54-dae6c773b990"
+    },
+    {
+      "sourceIndex": 59,
+      "username": "lkramen",
+      "caption": "Me asking where the participation points went.",
+      "url": "https://coms-6998-theta.vercel.app/meme/b49ca6aa-74dc-844d-a19a-e168cc8f70a2"
+    },
+    {
+      "sourceIndex": 62,
+      "username": "johndoe",
+      "caption": "When someone in office hours says this exact problem is on the exam.",
+      "url": "https://coms-6998-theta.vercel.app/meme/f13f6929-bc93-868e-bdfe-a0dfeade13eb"
+    },
+    {
+      "sourceIndex": 63,
+      "username": "lkramen",
+      "caption": "Me trying to keep up with a friend who calls this a casual walking pace.",
+      "url": "https://coms-6998-theta.vercel.app/meme/71d59d78-cb70-825a-9bbf-785fd2172d37"
+    },
+    {
+      "sourceIndex": 65,
+      "username": "johndoe",
+      "caption": "My cat reviewing the amount of work I completed during a study break.",
+      "url": "https://coms-6998-theta.vercel.app/meme/9bfbd219-1706-863d-b85d-c776b5a9f469"
+    },
+    {
+      "sourceIndex": 66,
+      "username": "lkramen",
+      "caption": "When the professor says as you remember from last semester.",
+      "url": "https://coms-6998-theta.vercel.app/meme/35bb5302-31cc-88c0-a3e7-69caff5a7972"
+    },
+    {
+      "sourceIndex": 67,
+      "username": "johndoe",
+      "caption": "The IT department asking if I have tried turning myself off and on again.",
+      "url": "https://coms-6998-theta.vercel.app/meme/90b5065c-07aa-87c5-89c6-3c16b69f4fb5"
+    },
+    {
+      "sourceIndex": 68,
+      "username": "lkramen",
+      "caption": "My friend convincing me that a study break should include dessert.",
+      "url": "https://coms-6998-theta.vercel.app/meme/f30daaa3-b8b1-8473-9a2f-f3d295125254"
+    },
+    {
+      "sourceIndex": 69,
+      "username": "johndoe",
+      "caption": "The first-year student trying to identify which line is for free food.",
+      "url": "https://coms-6998-theta.vercel.app/meme/074856e3-7836-8c2c-a00c-f4075373e191"
+    },
+    {
+      "sourceIndex": 70,
+      "username": "lkramen",
+      "caption": "The professor says the proof is obvious and moves to the next slide.",
+      "url": "https://coms-6998-theta.vercel.app/meme/d68b515e-3e3c-8618-be74-a52167ba6d98"
+    },
+    {
+      "sourceIndex": 71,
+      "username": "johndoe",
+      "caption": "Me reversing out of a conversation that starts with quick group project idea.",
+      "url": "https://coms-6998-theta.vercel.app/meme/893624a2-1ed8-8c43-aac0-34fdaf11c967"
+    },
+    {
+      "sourceIndex": 72,
+      "username": "lkramen",
+      "caption": "The options were study or sleep. I selected reorganize my desktop.",
+      "url": "https://coms-6998-theta.vercel.app/meme/21dbfa14-9149-83d1-8985-f5abcba58fd9"
+    },
+    {
+      "sourceIndex": 73,
+      "username": "johndoe",
+      "caption": "When the website says your session expired after the form was complete.",
+      "url": "https://coms-6998-theta.vercel.app/meme/b7b604d8-9988-82c8-88a2-098dae0b68a3"
+    },
+    {
+      "sourceIndex": 74,
+      "username": "lkramen",
+      "caption": "Me requesting the points for having the right idea.",
+      "url": "https://coms-6998-theta.vercel.app/meme/f66a1978-da06-80b3-ac8a-d6da51823a5f"
+    },
+    {
+      "sourceIndex": 75,
+      "username": "johndoe",
+      "caption": "Me arriving at the lab with no experience and excellent safety goggles.",
+      "url": "https://coms-6998-theta.vercel.app/meme/622626f1-f7c6-836e-9599-71804305ac1d"
+    },
+    {
+      "sourceIndex": 77,
+      "username": "lkramen",
+      "caption": "Tell me the truth. Did the practice exam cover the actual exam?",
+      "url": "https://coms-6998-theta.vercel.app/meme/8c12db5c-677f-8d1e-a313-e2071dd74de2"
+    },
+    {
+      "sourceIndex": 78,
+      "username": "johndoe",
+      "caption": "The group project asking if we worked well together.",
+      "url": "https://coms-6998-theta.vercel.app/meme/c2a4183a-2eca-8ea6-a520-ae7e28257273"
+    },
+    {
+      "sourceIndex": 79,
+      "username": "lkramen",
+      "caption": "When the new team member is tiny but has already fixed the entire spreadsheet.",
+      "url": "https://coms-6998-theta.vercel.app/meme/b7ecf80b-6688-86da-b273-d9bdb1b427ba"
+    },
+    {
+      "sourceIndex": 80,
+      "username": "johndoe",
+      "caption": "The campus computer lab when every deadline is at 11:59 PM.",
+      "url": "https://coms-6998-theta.vercel.app/meme/477e0492-951c-84f5-8359-d3a0ca9dcae6"
+    },
+    {
+      "sourceIndex": 81,
+      "username": "lkramen",
+      "caption": "Me when the professor says this is review and I have never seen it before.",
+      "url": "https://coms-6998-theta.vercel.app/meme/3ad3076f-65eb-821f-a7ed-c6dabc7ef01f"
+    },
+    {
+      "sourceIndex": 82,
+      "username": "johndoe",
+      "caption": "The dining hall closed three minutes before I arrived.",
+      "url": "https://coms-6998-theta.vercel.app/meme/e324ee81-129e-85c3-b65c-4c2ee4bf314b"
+    },
+    {
+      "sourceIndex": 83,
+      "username": "lkramen",
+      "caption": "A live view of my brain while the lecture switches to notation.",
+      "url": "https://coms-6998-theta.vercel.app/meme/c0271023-ae70-8d64-905e-1d06b4512ac3"
+    },
+    {
+      "sourceIndex": 84,
+      "username": "johndoe",
+      "caption": "What did I learn this semester? Good question.",
+      "url": "https://coms-6998-theta.vercel.app/meme/09579c84-961f-8fc3-a4d2-17bfd8284fb9"
+    },
+    {
+      "sourceIndex": 85,
+      "username": "lkramen",
+      "caption": "The friend who brings a spare charger to every lecture.",
+      "url": "https://coms-6998-theta.vercel.app/meme/32b94354-9b8f-813d-9d08-39f4b90c95be"
+    },
+    {
+      "sourceIndex": 86,
+      "username": "johndoe",
+      "caption": "My cat inspecting the architectural model I stayed up all night building.",
+      "url": "https://coms-6998-theta.vercel.app/meme/cbe82e4b-002b-8a3b-94f9-5b2b7b0c4476"
+    },
+    {
+      "sourceIndex": 87,
+      "username": "lkramen",
+      "caption": "My two tabs: serious research and a deeply unserious playlist.",
+      "url": "https://coms-6998-theta.vercel.app/meme/8e21f273-18f6-83db-a0de-c50298c7201e"
+    },
+    {
+      "sourceIndex": 88,
+      "username": "johndoe",
+      "caption": "I studied all weekend. Be honest. I organized my notes for twenty minutes.",
+      "url": "https://coms-6998-theta.vercel.app/meme/03efc828-da10-85b2-8757-fafa6b29a6de"
+    },
+    {
+      "sourceIndex": 90,
+      "username": "lkramen",
+      "caption": "Watching someone close every browser tab without a moment of hesitation.",
+      "url": "https://coms-6998-theta.vercel.app/meme/c6b5d3da-19d9-8fe1-82c5-c824f1e1daf2"
+    },
+    {
+      "sourceIndex": 91,
+      "username": "johndoe",
+      "caption": "Tell me the truth. Was there homework over the break?",
+      "url": "https://coms-6998-theta.vercel.app/meme/ef1d9fee-0cd6-88f0-a175-6d466b634082"
+    },
+    {
+      "sourceIndex": 92,
+      "username": "lkramen",
+      "caption": "My first day as the person responsible for knowing what is going on.",
+      "url": "https://coms-6998-theta.vercel.app/meme/089ed82c-7d99-8cc9-8109-38158a48dc66"
+    },
+    {
+      "sourceIndex": 93,
+      "username": "johndoe",
+      "caption": "The face I make when the lecture recording is exactly as long as the lecture.",
+      "url": "https://coms-6998-theta.vercel.app/meme/21590f56-3a98-858b-b84c-269114f5c66b"
+    },
+    {
+      "sourceIndex": 94,
+      "username": "lkramen",
+      "caption": "Me realizing the student discount does not apply to rent.",
+      "url": "https://coms-6998-theta.vercel.app/meme/0487195a-5451-8f7c-bf84-52b04e4bd49d"
+    },
+    {
+      "sourceIndex": 95,
+      "username": "johndoe",
+      "caption": "When someone says the group project is basically done but has not opened it.",
+      "url": "https://coms-6998-theta.vercel.app/meme/5c458d45-6c2a-8678-a78b-66666bc036fe"
+    },
+    {
+      "sourceIndex": 97,
+      "username": "lkramen",
+      "caption": "My perfectly organized desktop, five downloads ago.",
+      "url": "https://coms-6998-theta.vercel.app/meme/6b8fc5bc-0274-8184-869e-e72316596b70"
+    },
+    {
+      "sourceIndex": 98,
+      "username": "johndoe",
+      "caption": "I have started the paper. Be honest. I named the document.",
+      "url": "https://coms-6998-theta.vercel.app/meme/4d5a29f6-7350-8264-b936-12ce1f3ac78f"
+    },
+    {
+      "sourceIndex": 99,
+      "username": "lkramen",
+      "caption": "Me accepting one small task and accidentally joining three committees.",
+      "url": "https://coms-6998-theta.vercel.app/meme/52de615e-d601-8523-953f-a226bc0f9751"
+    },
+    {
+      "sourceIndex": 100,
+      "username": "johndoe",
+      "caption": "Me following the friend who actually knows which subway exit to use.",
+      "url": "https://coms-6998-theta.vercel.app/meme/d38984de-35d9-808f-938e-2edcfb3e6450"
+    }
+  ],
+  "storageSourceAssetsVerified": 83,
+  "storageRenderedAssetsVerified": 83,
+  "applicationTablesWithoutRls": 0,
+  "transientFailureRecovered": "One existing-row read returned Gateway Timeout; unchanged single-item retry published successfully."
+}
