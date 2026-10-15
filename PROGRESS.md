@@ -167,3 +167,7 @@ Ruling: scoped live migration is additive except removal of the former required-
 - Production build passed. Real authenticated Browser1280x900 and390x844 confirms captions/images with date-only metadata, no location/style label and no horizontal overflow. No content was modified.
 
 - Released source0cac83984276f278bf184d1840dd5d0eea110a98, dpl_EFhNAa5fq5LiHf4AFqgyfH9oUBKu Ready at https://coms-6998-bmxip378n-lkr2124-2742s-projects.vercel.app ; stable alias updated. Real owner production HTML verifies all48cards have date-only metadata and preserved caption/image. Task broker shutdown explicitly signs out its normal owner session; preview stopped, ports3120/3121closed and matching maintenance records marked stopped. No external blocker.
+
+## Direct feed action on generation notice (2026-10-15)
+- Added a Keep scrolling link to /feed beside Open draft in the shared pending-generation notice. Existing studio pending feed link retained. Navigation is user-initiated; background server generation is unaffected.
+- Six existing studio/background-generation tests, scoped ESLint and production build pass. Browser checks use an isolated preview rendered from the actual updated component with synthetic pending hook data and existing CSS; no generation or production data mutation. Desktop1280x720 and mobile390x500 show both44px actions with no overflow. Clicking Keep scrolling reaches the real public /feed and For the plot heading. Temporary preview23665 on3122 registered for cleanup.
