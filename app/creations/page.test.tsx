@@ -41,3 +41,12 @@ it("shows a retry state instead of misleading zero counts when loading fails", a
  expect(screen.queryByRole("navigation", { name: "Filter your creations" })).not.toBeInTheDocument();
  expect(screen.queryByText("private backend detail")).not.toBeInTheDocument();
 });
+
+it("shows the meme and caption without place or style labels", async () => {
+ creations.mockResolvedValue([{ ...rows[1], style: "NYC", location: "New York City", country_code: "US" }]);
+ render(await Creations({ searchParams: Promise.resolve({}) }));
+ expect(screen.getByRole("heading", { name: "The published caption" })).toBeInTheDocument();
+ expect(screen.getByRole("img", { name: "The published caption" })).toHaveAttribute("src", "/api/meme-image/published");
+ expect(screen.queryByText("NYC")).not.toBeInTheDocument();
+ expect(screen.queryByText("New York City")).not.toBeInTheDocument();
+});

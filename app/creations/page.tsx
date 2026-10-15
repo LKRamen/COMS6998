@@ -34,7 +34,7 @@ export default async function Creations({ searchParams }: { searchParams: Promis
       {row.photo_url ? draft ? <img src={row.photo_url} alt="Your private draft image" loading="lazy" decoding="async"/> : <MemeMedia src={row.photo_url} caption={row.caption} rendered={Boolean(row.rendered_path)}/> : <div className={styles.unavailable}>Preview unavailable</div>}
       <span className={`${styles.badge} ${draft ? styles.draft : styles.published}`}><span/>{draft ? "Private draft" : "Published"}</span>
      </Link>
-     <div className={styles.cardBody}><div className={styles.meta}><span>{row.style}</span><time dateTime={draft ? row.created_at : row.published_at || row.created_at}>{date}</time></div><h2>{title}</h2>
+     <div className={styles.cardBody}><div className={styles.meta}><time dateTime={draft ? row.created_at : row.published_at || row.created_at}>{date}</time></div><h2>{title}</h2>
       <Link className={styles.primaryLink} href={destination}>{draft ? "Continue draft" : "View public post"}<ArrowUpRight size={16}/></Link>
       <div className={styles.cardFooter}>{!draft && <Link href={`/creations/${row.id}`}>Private history</Link>}<CreationControls id={row.id}/></div>
      </div>
