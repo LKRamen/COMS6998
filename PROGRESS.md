@@ -165,3 +165,5 @@ Ruling: scoped live migration is additive except removal of the former required-
 - Regression first failed on the rendered NYC span, then all5creation-page tests passed with meme/image/caption checks and location/style-label exclusion. Standard lint CLI did not exit despite completing CPU work; task-only process stopped. Equivalent ESLint API verification completed with zero errors and explicit process exit. Build, Browser and release verification follow.
 
 - Production build passed. Real authenticated Browser1280x900 and390x844 confirms captions/images with date-only metadata, no location/style label and no horizontal overflow. No content was modified.
+
+- Released source0cac83984276f278bf184d1840dd5d0eea110a98, dpl_EFhNAa5fq5LiHf4AFqgyfH9oUBKu Ready at https://coms-6998-bmxip378n-lkr2124-2742s-projects.vercel.app ; stable alias updated. Real owner production HTML verifies all48cards have date-only metadata and preserved caption/image. Task broker shutdown explicitly signs out its normal owner session; preview stopped, ports3120/3121closed and matching maintenance records marked stopped. No external blocker.
