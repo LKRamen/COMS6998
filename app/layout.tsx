@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import "./globals.css";
 import "./brainrot.css";
+import VoteNavigationRefresh from "./components/vote-navigation-refresh";
 
 export const metadata: Metadata = {
   title: { default: "Brainrot · Your brain. Off duty.", template: "%s · Brainrot" },
@@ -15,7 +17,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body><Suspense fallback={null}><VoteNavigationRefresh/></Suspense>{children}</body>
     </html>
   );
 }

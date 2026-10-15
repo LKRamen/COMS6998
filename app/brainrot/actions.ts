@@ -12,7 +12,7 @@ function refresh(id?: string) {
  revalidatePath("/meme/[id]", "page");
  if (id) { revalidatePath(`/meme/${id}`); revalidatePath(`/creations/${id}`); }
 }
-export async function voteMeme(captionId: string, value: -1 | 1 | null): Promise<{ ok: true; vote: -1 | 1 | null; score: number } | { ok: false; error: string; login?: boolean }> {
+async function writeVote(captionId: string, value: -1 | 1 | null, refreshPages: boolean): Promise<{ ok: true; vote: -1 | 1 | null; score: number } | { ok: false; error: string; login?: boolean }> {
  try {
   const client = await createClient(); const { data: { user } } = await client.auth.getUser();
   if (!user) return { ok: false, login: true, error: "Your session ended. Sign in to save your vote." };
@@ -20,10 +20,13 @@ export async function voteMeme(captionId: string, value: -1 | 1 | null): Promise
   const vote = parseVote(value);
   const { data, error } = await client.rpc("caption_vote", { p_caption_id: captionId, p_value: vote });
   if (error) throw new Error(error.message);
-  // Swipe clients reconcile their local queue; no page refresh interrupts the animation.
-  refresh(); return { ok: true, vote: data.vote, score: Number(data.score) };
+  if (refreshPages) refresh();
+  return { ok: true, vote: data.vote, score: Number(data.score) };
  } catch (error) { return { ok: false, error: error instanceof Error ? error.message : "Your vote couldn’t be saved. Please try again." }; }
 }
+export async function voteMeme(captionId: string, value: -1 | 1 | null) { return writeVote(captionId, value, true); }
+// The swipe deck reconciles locally. Revalidating its route would interrupt every gesture.
+export async function voteSwipeMeme(captionId: string, value: -1 | 1) { return writeVote(captionId, value, false); }
 export async function loadSwipeMemes(exclude: string[]) {
  if (!Array.isArray(exclude) || exclude.length > 2000 || !exclude.every(isUuid)) return { ok: false as const, error: "Please refresh the feed to continue." };
  try { return { ok: true as const, posts: await discover(await createClient(), { sort: "swipe", exclude }) }; }

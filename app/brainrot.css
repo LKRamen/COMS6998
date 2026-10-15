@@ -17,3 +17,7 @@
 
 .deck-stage:has(.swipe-card){min-height:0}
 @media(min-width:761px){.brainrot-app:has(.feed-page) .app-header{height:78px}.feed-page .section-heading{padding:22px 0 24px}.feed-page .section-heading .overline{margin:0 0 8px}.feed-page .section-heading h1{font-size:48px;margin:0}.feed-page .swipe-card-image{height:clamp(230px,calc(100dvh - 425px),410px)}}
+
+/* Keep the next complete card mounted while its image and metadata rise into place. */
+.deck-stage > .deck-back-card{inset:0;transform:none;transform-origin:center 70%;will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.deck-stage > .deck-back-card{will-change:auto}}

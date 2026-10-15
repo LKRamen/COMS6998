@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-15T16:23:01.606Z",
+  "base": "http://127.0.0.1:3120",
+  "passed": true,
+  "checks": [
+    {
+      "sort": "new",
+      "elapsedMs": 629,
+      "posts": 20,
+      "serverOrderMatchesDatabase": true,
+      "firstIds": [
+        "d23b0717-56ce-4b59-9ae8-7e46a070b7cd",
+        "42191d36-6fb9-844a-9f11-e097b6c05004",
+        "d38984de-35d9-808f-938e-2edcfb3e6450"
+      ]
+    },
+    {
+      "sort": "trending",
+      "elapsedMs": 392,
+      "posts": 20,
+      "serverOrderMatchesDatabase": true,
+      "firstIds": [
+        "d23b0717-56ce-4b59-9ae8-7e46a070b7cd",
+        "42191d36-6fb9-844a-9f11-e097b6c05004",
+        "6b8fc5bc-0274-8184-869e-e72316596b70"
+      ]
+    },
+    {
+      "sort": "top",
+      "elapsedMs": 262,
+      "posts": 20,
+      "serverOrderMatchesDatabase": true,
+      "firstIds": [
+        "d23b0717-56ce-4b59-9ae8-7e46a070b7cd",
+        "42191d36-6fb9-844a-9f11-e097b6c05004",
+        "6b8fc5bc-0274-8184-869e-e72316596b70"
+      ]
+    }
+  ],
+  "scope": "Anonymous real Supabase RPC compared to server-rendered gallery anchors; full global sort before pagination, no client re-sort."
+}
