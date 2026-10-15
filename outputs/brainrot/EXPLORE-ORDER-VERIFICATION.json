@@ -1,11 +1,11 @@
 {
-  "checkedAt": "2026-10-15T16:23:01.606Z",
-  "base": "http://127.0.0.1:3120",
+  "checkedAt": "2026-10-15T16:26:58.513Z",
+  "base": "https://coms-6998-kffjfw06t-lkr2124-2742s-projects.vercel.app",
   "passed": true,
   "checks": [
     {
       "sort": "new",
-      "elapsedMs": 629,
+      "elapsedMs": 1044,
       "posts": 20,
       "serverOrderMatchesDatabase": true,
       "firstIds": [
@@ -16,24 +16,24 @@
     },
     {
       "sort": "trending",
-      "elapsedMs": 392,
+      "elapsedMs": 334,
       "posts": 20,
       "serverOrderMatchesDatabase": true,
       "firstIds": [
-        "d23b0717-56ce-4b59-9ae8-7e46a070b7cd",
-        "42191d36-6fb9-844a-9f11-e097b6c05004",
-        "6b8fc5bc-0274-8184-869e-e72316596b70"
+        "6b8fc5bc-0274-8184-869e-e72316596b70",
+        "0487195a-5451-8f7c-bf84-52b04e4bd49d",
+        "c6b5d3da-19d9-8fe1-82c5-c824f1e1daf2"
       ]
     },
     {
       "sort": "top",
-      "elapsedMs": 262,
+      "elapsedMs": 332,
       "posts": 20,
       "serverOrderMatchesDatabase": true,
       "firstIds": [
-        "d23b0717-56ce-4b59-9ae8-7e46a070b7cd",
-        "42191d36-6fb9-844a-9f11-e097b6c05004",
-        "6b8fc5bc-0274-8184-869e-e72316596b70"
+        "6b8fc5bc-0274-8184-869e-e72316596b70",
+        "0487195a-5451-8f7c-bf84-52b04e4bd49d",
+        "c6b5d3da-19d9-8fe1-82c5-c824f1e1daf2"
       ]
     }
   ],

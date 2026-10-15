@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-15T16:27:03.330Z",
+  "base": "https://coms-6998-kffjfw06t-lkr2124-2742s-projects.vercel.app",
+  "commit": "f219b5b02cba90d2d996e118a0a5a5ef1dcbe66c",
+  "passed": true,
+  "checks": [
+    "Immutable deployment and stable alias publicly accessible",
+    "Deployed new swipe server action rejects anonymous vote without a database write",
+    "Production gallery order verified separately against live database"
+  ],
+  "tests": {
+    "files": 23,
+    "passed": 96,
+    "runner": "Vitest forks pool; default threads pool had one worker startup timeout"
+  },
+  "build": "Passed local and Vercel",
+  "browser": {
+    "desktop": "1280x800",
+    "mobile": "390x844",
+    "verified": [
+      "Named gallery loading replaces old results",
+      "Row-major sorted grid with fixed image areas",
+      "Loaded images and readable captions",
+      "Real mouse-drag, arrow-key and button votes",
+      "Optimistic next card while saving",
+      "Detail0 -> Explore -> Feed -> vote+1 -> Back Explore -> Back Detail: score1 and pressedtrue"
+    ],
+    "scope": "Production build locally against existing Supabase; production public UI checked separately. No frame-rate benchmark claimed.",
+    "production": "Anonymous immutable deployment: Top navigation, correct first three ranked posts and loaded images verified."
+  },
+  "data": "Four temporary votes and one disposable account removed; all90historical moments/270captions/19votes unchanged; seven app tables RLS.",
+  "deploymentId": "dpl_6u2LCeMs8wtBZa9j7Y2SehGYzJKn"
+}
