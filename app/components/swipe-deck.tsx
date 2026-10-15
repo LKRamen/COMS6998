@@ -20,10 +20,22 @@ export default function SwipeDeck({ initialPosts, signedIn, preview = false }: {
  const [hasMore, setHasMore] = useState(initialPosts.length === 20 && !preview);
  const busy = useRef(false), fetching = useRef(false), seen = useRef(new Set(initialPosts.map(p => p.id)));
  const completed = useRef(new Set<string>());
+ const warmedImages = useRef(new Set<string>());
  const mounted = useRef(true); const x = useMotionValue(0), rotation = useTransform(x, [-250, 250], [-15, 15]);
  const positive = useTransform(x, [30, 110], [0, 1]), negative = useTransform(x, [-110, -30], [1, 0]);
  const reduced = useReducedMotion(); const current = queue[0];
  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+ useEffect(() => {
+  // The first two cards are already mounted. Warm only three more, at low priority.
+  for (const post of queue.slice(2, 5)) {
+   const src = `${post.photo_url}?source=1`;
+   if (warmedImages.current.has(src)) continue;
+   warmedImages.current.add(src);
+   const image = new Image(); image.fetchPriority = "low";
+   image.onerror = () => { warmedImages.current.delete(src); };
+   image.src = src;
+  }
+ }, [queue]);
  const fetchMore = useCallback(async () => {
   if (fetching.current || !hasMore || seen.current.size >= 2000) return;
   fetching.current = true; setLoading(true);
@@ -70,10 +82,10 @@ export default function SwipeDeck({ initialPosts, signedIn, preview = false }: {
   <div className="deck-topline"><span><span className="live-dot"/> {preview ? "FROM THE COMMUNITY" : "FRESH FROM THE COMMUNITY"}</span><span>{preview ? "REAL MEMES. REAL PEOPLE." : `${rated} rated this session`}</span></div>
   <div className="deck-stage">
    {current ? <>
-    {queue[1] && <article className="deck-back-card" aria-hidden="true"><MemeMedia src={`${queue[1].photo_url}?source=1`} caption={queue[1].text} eager/></article>}
+    {queue[1] && <article className="deck-back-card" aria-hidden="true"><MemeMedia src={`${queue[1].photo_url}?source=1`} caption={queue[1].text} eager fetchPriority="low"/></article>}
     <motion.article className="swipe-card" aria-label="Current meme" style={{ x, rotate: rotation }} drag={pending ? false : "x"} dragMomentum={false} dragConstraints={{ left: 0, right: 0 }} dragElastic={0.85}
      onDragEnd={(_event, info) => { if (Math.abs(info.offset.x) > 100) void rate(info.offset.x > 0 ? 1 : -1); else void animate(x, 0, { type: "spring", stiffness: 430, damping: 30 }); }}>
-     <div className="swipe-card-image"><MemeMedia src={`${current.photo_url}?source=1`} caption={current.text} eager/>
+     <div className="swipe-card-image"><MemeMedia src={`${current.photo_url}?source=1`} caption={current.text} eager fetchPriority="high"/>
       <motion.div className="reaction-stamp positive" style={{ opacity: positive }}>IT HITS</motion.div><motion.div className="reaction-stamp negative" style={{ opacity: negative }}>NOT IT</motion.div>
       <Link className="meme-detail-shortcut" aria-label="Open meme details" href={`/meme/${current.id}`} onPointerDown={event => event.stopPropagation()}><ArrowUpRight size={20}/></Link>
      </div>

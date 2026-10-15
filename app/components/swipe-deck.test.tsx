@@ -14,6 +14,25 @@ vi.mock("motion/react", async () => {
 import SwipeDeck from "./swipe-deck";
 const meme = (id: string): Meme => ({ id, caption_id: id, text: `Caption ${id}`, photo_path: "", photo_url: "/photo.jpg", style: "Brainrot", author_name: "Sam", username: "sam", avatar_path: null, rendered_path: null, published_at: "2026-10-15T00:00:00Z", score: 0, upvotes: 0, downvotes: 0, vote: null, own: false });
 afterEach(() => { cleanup(); vi.resetAllMocks(); });
+it("prioritizes the visible image over the hidden next card", () => {
+ render(<SwipeDeck initialPosts={[meme("one"), meme("two")]} signedIn/>);
+ const current = screen.getByRole("article", { name: "Current meme" }).querySelector("img");
+ expect(current).toHaveAttribute("fetchpriority", "high");
+ const images = document.querySelectorAll(".deck-back-card img");
+ expect(images[0]).toHaveAttribute("fetchpriority", "low");
+});
+it("warms only three further image URLs instead of the whole feed", () => {
+ const warmed: { src: string; fetchPriority?: string }[] = [];
+ class WarmImage { fetchPriority = ""; set src(src: string) { warmed.push({ src, fetchPriority: this.fetchPriority }); } }
+ vi.stubGlobal("Image", WarmImage);
+ try {
+  const posts = ["one", "two", "three", "four", "five", "six"].map(id => ({ ...meme(id), photo_url: `/photo-${id}.jpg` }));
+  const view = render(<SwipeDeck initialPosts={posts} signedIn/>);
+  expect(warmed).toEqual(["three", "four", "five"].map(id => ({ src: `/photo-${id}.jpg?source=1`, fetchPriority: "low" })));
+  view.rerender(<SwipeDeck initialPosts={posts} signedIn/>);
+  expect(warmed).toHaveLength(3);
+ } finally { vi.unstubAllGlobals(); }
+});
 it("does not submit guest gestures and offers sign-in", async () => {
  render(<SwipeDeck initialPosts={[meme("one")]} signedIn={false}/>);
  fireEvent.click(screen.getByRole("button", { name: "Upvote meme" }));
