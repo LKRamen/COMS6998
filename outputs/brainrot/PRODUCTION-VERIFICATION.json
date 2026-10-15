@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-15T08:47:07.776Z",
+  "base": "https://coms-6998-8vwsu6nw8-lkr2124-2742s-projects.vercel.app",
+  "commit": "fd82b38ebb106f5e35e739c0ed331b43b0626ce0",
+  "passed": true,
+  "checks": [
+    "Immutable production deployment publicly accessible without Vercel authentication",
+    "Production anonymous and cross-origin uploads rejected",
+    "Production authenticated photo upload saved to existing private Storage and database",
+    "Actual Vercel Gemini generation produced three persistent captions with private exact prompts",
+    "Production Sharp rendering, flattened Storage publication, repeat-submit idempotence and public detail/image succeeded",
+    "Production vote action rejects guests; distinct Auth user vote persists once, aggregates and excludes from swipe feed",
+    "Production Explore and public creator statistics reflect persistent publication and vote"
+  ],
+  "failure": null,
+  "scope": "Real Vercel runtime, existing Supabase/Gemini; disposable QA accounts and synthetic image. Sessions remained in memory."
+}

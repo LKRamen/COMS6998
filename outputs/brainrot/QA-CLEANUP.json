@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-15T08:48:14.463Z",
+  "passed": true,
+  "taskAccountsRemoved": 2,
+  "taskPhotoAssetsRemoved": 4,
+  "historicalMomentsUnchanged": 5,
+  "historicalFingerprintMatches": true,
+  "scope": "Only recorded task-created QA Auth accounts and their own paths removed. Historical content preserved."
+}
