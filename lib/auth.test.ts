@@ -23,7 +23,7 @@ describe("protected access", () => {
   it("requires profile completion before creating content", async () => {
     getUser.mockResolvedValueOnce({ data: { user: { id: "user-1" } }, error: null });
     profile.mockResolvedValueOnce({ data: { username: "ada", display_name: "Ada", username_claimed: false }, error: null });
-    await expect(requireCompleteProfile()).rejects.toThrow("redirect:/profile");
+    await expect(requireCompleteProfile()).rejects.toThrow("redirect:/onboarding");
   });
   it("allows an authenticated user with a claimed public identity", async () => {
     getUser.mockResolvedValueOnce({ data: { user: { id: "user-1" } }, error: null });

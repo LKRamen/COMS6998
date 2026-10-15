@@ -7,6 +7,12 @@ import { createClient } from "../../lib/supabase/server";
 export async function signInWithGoogle() {
   const origin = (await headers()).get("origin");
   if (!origin) redirect("/login?error=signin");
+  // Keep the PKCE verifier and provider return on the registered production host.
+  // Deployment-specific hosts may not be in Supabase's redirect allow list.
+  const productionOrigin = "https://coms-6998-theta.vercel.app";
+  if (new URL(origin).hostname.endsWith(".vercel.app") && origin !== productionOrigin) {
+    redirect(`${productionOrigin}/login`);
+  }
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

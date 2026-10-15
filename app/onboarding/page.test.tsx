@@ -1,0 +1,13 @@
+import { cleanup, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+const mocks = vi.hoisted(() => ({ profile: vi.fn(), redirect: vi.fn((path: string) => { throw new Error(`redirect:${path}`); }) }));
+vi.mock("next/navigation", () => ({ redirect: mocks.redirect }));
+vi.mock("../../lib/auth", async () => ({ ...(await vi.importActual<typeof import("../../lib/auth")>("../../lib/auth")), requireUser:async()=>({user:{id:"owner",user_metadata:{full_name:"Ada Lovelace"}},supabase:{}}),readProfile:mocks.profile }));
+vi.mock("./actions", () => ({ finishOnboarding: vi.fn() }));
+vi.mock("../auth/actions", () => ({ signOut: vi.fn() }));
+import Onboarding from "./page";
+afterEach(cleanup);
+beforeEach(() => vi.clearAllMocks());
+it("explicitly asks a new Google account to choose a display name and public handle", async () => { mocks.profile.mockResolvedValue(null); render(await Onboarding()); expect(screen.getByRole("textbox",{name:"Display name"})).toHaveValue("Ada Lovelace"); expect(screen.getByRole("textbox",{name:/^Username/})).toHaveValue(""); expect(screen.getByRole("button",{name:"Create my profile"})).toBeInTheDocument(); });
+it("keeps profile outages retryable without falsely showing a signed-out page", async () => { mocks.profile.mockRejectedValue(new Error("unavailable")); render(await Onboarding()); expect(screen.getByRole("alert")).toHaveTextContent("Your account is signed in."); expect(screen.getByRole("link",{name:"Try again"})).toHaveAttribute("href","/onboarding"); expect(screen.queryByRole("textbox")).not.toBeInTheDocument(); });
+it("takes previously completed accounts directly to the feed", async () => { mocks.profile.mockResolvedValue({username:"ada",display_name:"Ada",username_claimed:true}); await expect(Onboarding()).rejects.toThrow("redirect:/feed"); });

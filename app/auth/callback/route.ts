@@ -8,19 +8,22 @@ export async function GET(request: NextRequest) {
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (user && !userError) {
         let complete = false;
+        let profileFailed = false;
         try {
           complete = isProfileComplete(await readProfile(supabase, user.id));
         } catch {
-          // Profile page provides a retryable error if setup is incomplete.
+          profileFailed = true;
         }
-        const response = NextResponse.redirect(new URL(complete ? "/" : "/profile", request.url));
+        const response = NextResponse.redirect(new URL(complete ? "/feed" : profileFailed ? "/onboarding?error=profile" : "/onboarding", request.url));
         response.headers.set("Cache-Control", "private, no-store");
         return response;
       }
     }
   }
-  return NextResponse.redirect(new URL("/login?error=callback", request.url));
+  const response = NextResponse.redirect(new URL("/login?error=callback", request.url));
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }

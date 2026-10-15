@@ -32,6 +32,6 @@ export async function readProfile(supabase: Awaited<ReturnType<typeof createClie
 export async function requireCompleteProfile() {
   const { supabase, user } = await requireUser();
   const profile = await readProfile(supabase, user.id);
-  if (!isProfileComplete(profile)) redirect("/profile");
+  if (!isProfileComplete(profile)) redirect("/onboarding");
   return { supabase, user, profile: profile! };
 }

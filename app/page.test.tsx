@@ -29,6 +29,6 @@ describe("Quip public landing", () => {
  });
  it("guides existing accounts with unclaimed handles to choose their username", async () => {
   getUser.mockResolvedValue({ data: { user: { id: "user" } } }); readProfile.mockResolvedValue({ username: "sam", display_name: "Sam", username_claimed: false });
-  await expect(Home()).rejects.toThrow("REDIRECT:/profile");
+  await expect(Home()).rejects.toThrow("REDIRECT:/onboarding");
  });
 });

@@ -16,7 +16,7 @@ export default async function Home() {
   if (user) profileComplete = isProfileComplete(await readProfile(client, user.id));
   else posts = await discover(client, { sort: "trending" });
  } catch { failed = true; }
- if (signedIn) redirect(profileComplete ? "/feed" : "/profile");
+ if (signedIn) redirect(profileComplete ? "/feed" : "/onboarding");
  return <AppShell signedIn={false}><main className="landing-page"><section className="landing-hero"><div className="landing-copy">
   <p className="overline"><span className="accent-dot"/> A VERY GOOD USE OF YOUR BAD IDEAS</p>
   <h1>Your brain.<br/><span>Off duty.</span></h1>

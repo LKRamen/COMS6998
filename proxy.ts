@@ -2,6 +2,15 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function proxy(request: NextRequest) {
+  // A provider can fall back to the configured Site URL. Exchange its code
+  // before rendering the guest landing page; the PKCE verifier stays on this origin.
+  if (request.nextUrl.pathname === "/" && request.nextUrl.searchParams.has("code")) {
+    const callback = request.nextUrl.clone();
+    callback.pathname = "/auth/callback";
+    const response = NextResponse.redirect(callback);
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
+  }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.supabase_project_url;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.supabase_anon_key;
   let response = NextResponse.next({ request });
@@ -22,5 +31,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/feed", "/explore", "/meme/:path*", "/create", "/creations/:path*", "/login", "/profile/:path*", "/auth/:path*"],
+  matcher: ["/", "/feed", "/explore", "/meme/:path*", "/create", "/creations/:path*", "/login", "/onboarding", "/profile/:path*", "/auth/:path*"],
 };
