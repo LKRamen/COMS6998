@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-15T13:45:20.684Z",
+  "base": "https://coms-6998-dnz6clf62-lkr2124-2742s-projects.vercel.app",
+  "passed": true,
+  "checks": [
+    "Real authenticated allowance is unlimited",
+    "Production studio has no daily counter and explicitly optional context",
+    "Actual production Gemini generated three captions from uploaded image with zero user context"
+  ],
+  "failure": null,
+  "temporaryAccountAndAssetsRemoved": true
+}
