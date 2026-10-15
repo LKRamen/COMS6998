@@ -1,0 +1,124 @@
+{
+  "checkedAt": "2026-10-15T15:24:03.682Z",
+  "passed": true,
+  "base": "https://coms-6998-ke7gwu4pm-lkr2124-2742s-projects.vercel.app",
+  "sourceCommit": "2f2bb59db7a8f644eba6f4f27aaf3d61165af805",
+  "before": [
+    {
+      "run": 1,
+      "pageMs": 1045,
+      "imageRedirectMs": 420,
+      "storageMs": 1866,
+      "status": 200,
+      "bytes": 231748,
+      "redirectCache": "no-store",
+      "storageCache": null
+    },
+    {
+      "run": 2,
+      "pageMs": 331,
+      "imageRedirectMs": 292,
+      "storageMs": 691,
+      "status": 200,
+      "bytes": 231748,
+      "redirectCache": "no-store",
+      "storageCache": null
+    },
+    {
+      "run": 3,
+      "pageMs": 371,
+      "imageRedirectMs": 305,
+      "storageMs": 1227,
+      "status": 200,
+      "bytes": 231748,
+      "redirectCache": "no-store",
+      "storageCache": null
+    }
+  ],
+  "after": {
+    "images": [
+      {
+        "run": 1,
+        "ms": 1302,
+        "cache": "MISS",
+        "cacheControl": "public, max-age=300",
+        "age": "0",
+        "bytes": 231748,
+        "sha256": "4945436bc3f119accf9806af524616d76095869bef47f022caf75a939dc8e400"
+      },
+      {
+        "run": 2,
+        "ms": 682,
+        "cache": "HIT",
+        "cacheControl": "public, max-age=300",
+        "age": "0",
+        "bytes": 231748,
+        "sha256": "4945436bc3f119accf9806af524616d76095869bef47f022caf75a939dc8e400"
+      },
+      {
+        "run": 3,
+        "ms": 370,
+        "cache": "HIT",
+        "cacheControl": "public, max-age=300",
+        "age": "1",
+        "bytes": 231748,
+        "sha256": "4945436bc3f119accf9806af524616d76095869bef47f022caf75a939dc8e400"
+      },
+      {
+        "run": 4,
+        "ms": 164,
+        "cache": "HIT",
+        "cacheControl": "public, max-age=300",
+        "age": "1",
+        "bytes": 231748,
+        "sha256": "4945436bc3f119accf9806af524616d76095869bef47f022caf75a939dc8e400"
+      },
+      {
+        "run": 5,
+        "ms": 153,
+        "cache": "HIT",
+        "cacheControl": "public, max-age=300",
+        "age": "1",
+        "bytes": 231748,
+        "sha256": "4945436bc3f119accf9806af524616d76095869bef47f022caf75a939dc8e400"
+      }
+    ],
+    "pages": [
+      {
+        "ms": 715,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "firstImagePreloaded": true
+      },
+      {
+        "ms": 413,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "firstImagePreloaded": true
+      },
+      {
+        "ms": 401,
+        "cacheControl": "private, no-cache, no-store, max-age=0, must-revalidate",
+        "firstImagePreloaded": true
+      }
+    ]
+  },
+  "privateDraft404NoStore": true,
+  "missing404NoStore": true,
+  "scope": "Real hosted image GETs including CDN HIT and supplied-cookie variant. Personalized feed stays private/no-store; published pixels alone cache300seconds. Before includes redirect+Storage delivery; after returns bytes directly.",
+  "deploymentId": "dpl_MNvKf9v638qVbizCbfSAC3ZykjLh",
+  "deploymentStatus": "Ready",
+  "browser": {
+    "desktop": "1280x720; current1600px image loaded with high priority; next1600px image loaded with low priority",
+    "mobile": "390x844; image visible, caption readable, voting controls and bottom navigation usable; viewport reset",
+    "screenshots": [
+      "feed-cache-desktop.jpg",
+      "feed-cache-mobile.jpg"
+    ]
+  },
+  "checks": {
+    "unitTests": 82,
+    "lint": "passed",
+    "localBuild": "passed",
+    "deployedBuild": "passed",
+    "peerReview": "no P1/P2 findings"
+  }
+}
