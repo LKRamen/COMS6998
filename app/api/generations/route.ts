@@ -4,7 +4,7 @@ import { isProfileComplete, readProfile } from "../../../lib/auth";
 import { getGenerationJobs, prepareGeneration } from "../../../lib/generation-jobs";
 import { isSameOriginRequest } from "../../../lib/request-origin";
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 const noStore = { "Cache-Control": "private, no-store" };
 
 export async function GET() {

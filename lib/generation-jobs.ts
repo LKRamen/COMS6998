@@ -6,6 +6,8 @@ import { getMoment } from "./captions";
 import { buildPrompts, isUuid, parseInputs } from "./caption-input";
 import { generateCaptions, geminiConfig, generationSettings } from "./ai/gemini";
 import { GenerationError } from "./generation-error";
+import { getPublishedPipeline, readPipelineSnapshot } from "./published-pipeline";
+import { runPipeline } from "./pipeline-runtime";
 
 export type GenerationJob = { id: string; moment_id: string | null; photo_revision: string; state: "pending" | "succeeded" | "failed" | "expired"; run_id: string | null; created_at: string; lease_expires_at: string; error_message?: string | null };
 type Client = Awaited<ReturnType<typeof createClient>>;
@@ -22,17 +24,49 @@ export async function prepareGeneration(client: Client, userId: string, id: stri
  const previous = moment.runs.filter(run => run.photo_revision === moment.photo_revision).slice(0, 5).reverse().flatMap(run => moment.captions.filter(caption => caption.generation_run_id === run.id).map(caption => caption.text));
  const prompts = buildPrompts(inputs, previous, moment.photo_revision);
  const admin = createAdminClient();
- const { data, error } = await admin.rpc("caption_reserve", { p_user_id: userId, p_moment_id: id, p_request_key: requestKey, p_system_prompt: prompts.system, p_user_prompt: prompts.user, p_model: model, p_settings: generationSettings(model) });
+ // Reusing a request key must keep its original release even if another admin publishes meanwhile.
+ const existing = await admin.from("generation_requests").select("settings,model,system_prompt").eq("creator_id", userId).eq("request_key", requestKey).maybeSingle();
+ if (existing.error) throw new GenerationError("Generation could not start. Your draft is saved; try again shortly.");
+ const pipeline = existing.data
+  ? (existing.data.settings?.pipeline ? readPipelineSnapshot(existing.data.settings.pipeline, inputs.style) : null)
+  : await getPublishedPipeline(admin, inputs.style);
+ const selectedModel = existing.data?.model ?? pipeline?.steps.at(-1)?.model ?? model;
+ const settings: Record<string, unknown> = existing.data ? { ...existing.data.settings } : {
+  ...generationSettings(selectedModel),
+  ...(pipeline ? { pipeline, pipelineInput: inputs } : {}),
+ };
+ // Traces are append-only execution evidence and are excluded from reservation identity by the RPC.
+ delete settings.pipelineTrace;
+ const systemPrompt = existing.data?.system_prompt ?? (pipeline
+  ? `Published pipeline ${pipeline.id}, draft revision ${pipeline.draft_version}. Exact prompts and results are recorded in settings.pipelineTrace.`
+  : prompts.system);
+ const { data, error } = await admin.rpc("caption_reserve", { p_user_id: userId, p_moment_id: id, p_request_key: requestKey, p_system_prompt: systemPrompt, p_user_prompt: prompts.user, p_model: selectedModel, p_settings: settings });
  if (error) throw new Error(error.message);
  const reservation = data as Reservation;
  return { reservation, perform: async () => {
   if (reservation.reused) return reservation.state === "succeeded" ? { ok: true } : { ok: false, error: "This generation is already running or has ended. Check its status before trying again." };
   try {
-   const { data: snapshot, error: snapshotError } = await admin.from("generation_requests").select("state,photo_path,system_prompt,user_prompt").eq("id", reservation.id).eq("creator_id", userId).single();
+   const { data: snapshot, error: snapshotError } = await admin.from("generation_requests").select("state,photo_path,system_prompt,user_prompt,settings").eq("id", reservation.id).eq("creator_id", userId).single();
    if (snapshotError || !snapshot || snapshot.state !== "pending" || !snapshot.photo_path.startsWith(`${userId}/`)) throw new GenerationError("This generation is no longer active. Your saved draft is safe.");
    const { data: image, error: downloadError } = await admin.storage.from("caption-photos").download(snapshot.photo_path);
    if (downloadError || !image) throw new GenerationError("Your photo could not be loaded. Your draft is saved; try again.");
-   const captions = await generateCaptions({ image: Buffer.from(await image.arrayBuffer()), systemPrompt: snapshot.system_prompt, userPrompt: snapshot.user_prompt });
+   const bytes = Buffer.from(await image.arrayBuffer());
+   let captions: string[];
+   if (snapshot.settings?.pipeline) {
+    const inputSnapshot = JSON.parse(snapshot.user_prompt);
+    const pipelineInputs = parseInputs(inputSnapshot);
+    const selected = readPipelineSnapshot(snapshot.settings.pipeline, pipelineInputs.style);
+    const result = await runPipeline({
+     steps: selected.steps, image: bytes, ...pipelineInputs,
+     previousCaptions: Array.isArray(inputSnapshot.previousCaptions) ? inputSnapshot.previousCaptions.filter((item: unknown): item is string => typeof item === "string").slice(-15) : [],
+    });
+    const traced = await admin.from("generation_requests").update({ settings: { ...snapshot.settings, pipelineTrace: result.steps } })
+     .eq("id", reservation.id).eq("creator_id", userId).eq("state", "pending").select("id").maybeSingle();
+    if (traced.error || !traced.data) throw new GenerationError("The pipeline results could not be saved. Your draft is saved; try again.");
+    captions = result.captions;
+   } else {
+    captions = await generateCaptions({ image: bytes, systemPrompt: snapshot.system_prompt, userPrompt: snapshot.user_prompt });
+   }
    const finished = await admin.rpc("caption_finish", { p_user_id: userId, p_request_id: reservation.id, p_captions: captions });
    if (finished.error) throw new GenerationError("Your captions could not be saved. Refresh before trying again.");
    revalidatePath(`/creations/${id}`); revalidatePath("/creations");
